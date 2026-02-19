@@ -1,0 +1,56 @@
+# =========================
+# Backend (.NET / C# / VS2022)
+# =========================
+# Derleme çıktıları
+[Bb]in/
+[Oo]bj/
+out/
+
+# Visual Studio klasörleri ve kullanıcı ayarları
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Yerel yapılandırma ve sırlar (Şifrelerin Git'e gitmemesi için)
+appsettings.Development.json
+appsettings.*.json
+secrets.json
+
+# =========================
+# Frontend (Node.js / React / Vue vb.)
+# =========================
+# Bağımlılıklar (Kesinlikle ignore edilmeli)
+node_modules/
+
+# Derleme ve production çıktıları
+dist/
+build/
+.next/
+out/
+
+# Ortam değişkenleri ve sırlar
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Log dosyaları
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# IDE ve İşletim Sistemi Dosyaları
+# =========================
+# VS Code (Ekip üyelerinin kişisel editör ayarlarının çakışmaması için)
+.vscode/
+
+# Mac / Windows sistem dosyaları
+.DS_Store
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
