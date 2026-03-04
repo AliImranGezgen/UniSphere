@@ -15,7 +15,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "1. UniSphere sunucusuna basariyla baglanildi!"
             cd ~/unisphere
