@@ -1,0 +1,29 @@
+name: UniSphere Otomatik Dagitim (CI/CD)
+
+on:
+  push:
+    branches:
+      - main # Bu robot sadece main dalına kod geldiğinde uyanır
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Robotun kendi işletim sistemi
+
+    steps:
+      - name: Sunucuya SSH ile Bağlan ve Docker'ı Yenile
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "1. UniSphere sunucusuna basariyla baglanildi!"
+            cd ~/unisphere
+            
+            echo "2. Konteynerler durduruluyor..."
+            docker-compose down
+            
+            echo "3. Yeni sistem ayaga kaldiriliyor..."
+            docker-compose up -d
+            
+            echo "4. Guncelleme tamamlandi! Sistem aktif."
