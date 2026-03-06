@@ -13,11 +13,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: always
 
   # 2. ARKA UÇ (BACKEND - .NET API)
-  backend:
+  unisphere_api:
     build: 
-      context: ./backend  # <-- DİKKAT: Ana dizinden backend klasörüne yönlendirdik
+      context: ./backend
       dockerfile: Dockerfile
     container_name: unisphere_api
     environment:
@@ -26,20 +27,19 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    restart: always
 
-  # 3. ÖN YÜZ (FRONTEND)
+  # 3. ÖN YÜZ (FRONTEND - VITE/REACT)
   frontend:
     build: 
-      context: ./frontend      # Docker'a frontend klasörüne gitmesini söylüyoruz
-      dockerfile: Dockerfile   # Oradaki Dockerfile'ı kullan diyoruz
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: unisphere_web
     ports:
-      - "3000:80"              # Dış dünyadan 3000 ile gelindiğinde Docker içindeki 80'e (Nginx) bağlan
+      - "3000:80"
     restart: always
     depends_on:
-      - unisphere_api          # Önce backend'in kalktığından emin ol
-    networks:
-      - unisphere_network      # Eğer network kullanıyorsan buraya ekle (varsayılan: default)
+      - unisphere_api
 
 volumes:
   pgdata:
