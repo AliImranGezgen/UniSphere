@@ -7,7 +7,7 @@ services:
     container_name: unisphere_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_PASSWORD: SecretPassword123!
       POSTGRES_DB: unisphere
     ports:
       - "5432:5432"
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
     container_name: unisphere_api
     environment:
-      - ConnectionStrings__DefaultConnection=Host=db;Database=unisphere;Username=postgres;Password=supersecretpassword
+      - ConnectionStrings__DefaultConnection=Host=db;Database=unisphere;Username=postgres;Password=SecretPassword123!
     ports:
       - "8080:8080"
     depends_on:
