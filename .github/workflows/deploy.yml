@@ -17,13 +17,17 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
+            script: |
             echo "1. UniSphere sunucusuna basariyla baglanildi!"
             cd ~/unisphere
             
-            echo "2. Konteynerler durduruluyor..."
+            echo "2. Yeni kodlar GitHub'dan sunucuya cekiliyor..."
+            git pull origin main
+            
+            echo "3. Eski konteynerler durduruluyor..."
             docker-compose down
             
-            echo "3. Yeni sistem ayaga kaldiriliyor..."
-            docker-compose up -d
+            echo "4. Yeni sistem insa ediliyor ve ayaga kaldiriliyor..."
+            docker-compose up -d --build
             
-            echo "4. Guncelleme tamamlandi! Sistem aktif."
+            echo "5. Guncelleme tamamlandi! Sistem aktif."
