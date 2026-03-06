@@ -11,23 +11,18 @@ jobs:
 
     steps:
       - name: Sunucuya SSH ile Bağlan ve Docker'ı Yenile
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            script: |
             echo "1. UniSphere sunucusuna basariyla baglanildi!"
             cd ~/unisphere
-            
             echo "2. Yeni kodlar GitHub'dan sunucuya cekiliyor..."
             git pull origin main
-            
             echo "3. Eski konteynerler durduruluyor..."
             docker-compose down
-            
             echo "4. Yeni sistem insa ediliyor ve ayaga kaldiriliyor..."
             docker-compose up -d --build
-            
             echo "5. Guncelleme tamamlandi! Sistem aktif."
