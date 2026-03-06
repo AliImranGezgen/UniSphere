@@ -1,53 +1,73 @@
-# UniSphere Frontend
+# React + TypeScript + Vite
 
-Bu klasör React + Vite + TypeScript kullanılarak oluşturulmuştur.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Kullanılan Teknolojiler
+Currently, two official plugins are available:
 
-- React (UI)
-- React Router (Sayfa geçişleri)
-- Zustand (Global State Management)
-- Axios (API istekleri için)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
----
+## React Compiler
 
-## Klasör Yapısı
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-src/
-- pages/ → Sayfa bileşenleri
-- router/ → Routing yönetimi
-- store/ → Global state (Zustand)
-- services/ → Backend API bağlantıları
+## Expanding the ESLint configuration
 
----
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Routing Mantığı
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-"/" → Root path (Ana giriş noktası)
-"/events" → Etkinlik sayfası
-"/clubs" → Kulüp sayfası
-"/dashboard" → Kullanıcı paneli
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-Root ("/") nedir?
-Web uygulamasının başlangıç adresidir.
-Örn: http://localhost:5173/
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
----
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## State Yönetimi
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-Zustand kullanılmıştır.
-Kullanıcı bilgisi global olarak tutulur.
-
-Not:
-State şu an memory tabanlıdır.
-Sayfa yenilenirse sıfırlanır.
-İleride persist middleware eklenebilir.
-
----
-
-## Backend Bağlantısı
-
-API istekleri src/services/api.ts dosyasından yapılacaktır.
-Şu an baseURL local backend adresidir.
-Production ortamında VPS adresi ile değiştirilecektir.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
