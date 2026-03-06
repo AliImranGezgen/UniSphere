@@ -25,7 +25,7 @@ jobs:
             echo "--- DAGITIM BASLADI ---"
             
             # Sunucudaki ana klasöre git
-            cd ~/unisphere
+            cd ~/UniSphere
             
             echo "1. GitHub'dan en guncel kodlar cekiliyor..."
             git pull origin main
