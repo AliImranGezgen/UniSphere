@@ -1,33 +1,43 @@
-name: UniSphere Otomatik Dagitim (CI/CD)
+name: UniSphere Continuous Deployment (CD)
 
 on:
   push:
-    branches:
-      - main # Bu robot sadece main dalına kod geldiğinde uyanır
+    branches: [ "main" ] # Sadece main dalına kod gönderildiğinde çalışır
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Robotun kendi işletim sistemi
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Sunucuya SSH ile Bağlan ve Docker'ı Yenile
-        uses: appleboy/ssh-action@v1.0.3
+      # 1. Kodları GitHub'dan al (Checkout)
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      # 2. Sunucuya bağlan ve Docker komutlarını çalıştır
+      - name: SSH ile Sunucuya Baglan ve Guncelle
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          # Buradaki girintilere (boşluklara) dikkat etmelisin:
           script: |
-            script: |
-            echo "1. UniSphere sunucusuna basariyla baglanildi!"
+            echo "--- DAGITIM BASLADI ---"
+            
+            # Sunucudaki ana klasöre git
             cd ~/unisphere
             
-            echo "2. Yeni kodlar GitHub'dan sunucuya cekiliyor..."
+            echo "1. GitHub'dan en guncel kodlar cekiliyor..."
             git pull origin main
             
-            echo "3. Eski konteynerler durduruluyor..."
+            echo "2. Eski konteynerler durduruluyor..."
             docker-compose down
             
-            echo "4. Yeni sistem insa ediliyor ve ayaga kaldiriliyor..."
+            echo "3. Yeni sistem (Backend & Frontend) insa ediliyor..."
+            # --build takisi sayesinde Dockerfile'daki degisiklikleri algilar ve derler
             docker-compose up -d --build
             
-            echo "5. Guncelleme tamamlandi! Sistem aktif."
+            echo "4. Temizlik: Kullanilmayan eski imajlar siliniyor..."
+            docker image prune -f
+            
+            echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
