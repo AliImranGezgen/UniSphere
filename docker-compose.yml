@@ -29,12 +29,17 @@ services:
 
   # 3. ÖN YÜZ (FRONTEND)
   frontend:
-    image: nginx:alpine
+    build: 
+      context: ./frontend      # Docker'a frontend klasörüne gitmesini söylüyoruz
+      dockerfile: Dockerfile   # Oradaki Dockerfile'ı kullan diyoruz
     container_name: unisphere_web
     ports:
-      - "3000:80"
+      - "3000:80"              # Dış dünyadan 3000 ile gelindiğinde Docker içindeki 80'e (Nginx) bağlan
+    restart: always
     depends_on:
-      - backend
+      - unisphere_api          # Önce backend'in kalktığından emin ol
+    networks:
+      - unisphere_network      # Eğer network kullanıyorsan buraya ekle (varsayılan: default)
 
 volumes:
   pgdata:
