@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # 1. VERİTABANI (POSTGRESQL)
+  db:
+    image: postgres:15-alpine
+    container_name: unisphere_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: unisphere
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # 2. ARKA UÇ (BACKEND - .NET API)
+  backend:
+    build: 
+      context: ./backend  # <-- DİKKAT: Ana dizinden backend klasörüne yönlendirdik
+      dockerfile: Dockerfile
+    container_name: unisphere_api
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=unisphere;Username=postgres;Password=supersecretpassword
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  # 3. ÖN YÜZ (FRONTEND)
+  frontend:
+    image: nginx:alpine
+    container_name: unisphere_web
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
