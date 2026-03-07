@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UniSphere.Core; // Bu satırı eklediğinden emin ol!
 
-namespace UniSphere.Infrastructure;
+namespace UniSphere.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {
