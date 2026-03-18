@@ -1,35 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import EventForm from './components/EventForm';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Diyelim ki kullanıcı "Düzenle" butonuna bastı ve veritabanından bu veriler geldi:
+  const sahteEskiVeri = {
+    id: 99,
+    title: "Eski UniSphere Toplantısı",
+    description: "Bu etkinlik geçen aydan kaldı, lütfen güncelleyin.",
+    date: "2026-04-10T14:30",
+    location: "Merkez Kütüphane",
+    clubId: "5"
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ backgroundColor: '#f4f4f4', minHeight: '100vh', padding: '20px' }}>
+      
+      {/* Formu GÜNCELLEME (Edit) Modunda çağırıyoruz. İçine veriyi yolladık! */}
+      <EventForm initialData={sahteEskiVeri} />
+      
+    </div>
+  );
 }
 
-export default App
+export default App;

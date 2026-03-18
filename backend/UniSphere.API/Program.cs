@@ -55,7 +55,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // React'in adresi
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -81,7 +90,7 @@ app.UseSwaggerUI();
 // Authentication ve Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors("AllowReactApp");
 
 // Controller endpointlerini aktif eder
 app.MapControllers();
