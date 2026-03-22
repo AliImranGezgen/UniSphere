@@ -28,10 +28,11 @@ jobs:
             cd ~/UniSphere
             
             echo "1. GitHub'dan en guncel kodlar cekiliyor..."
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
             
             echo "2. Eski konteynerler durduruluyor..."
-            docker-compose down
+            docker-compose up -d --build
             
             echo "3. Yeni sistem (Backend & Frontend) insa ediliyor..."
             # --build takisi sayesinde Dockerfile'daki degisiklikleri algilar ve derler
