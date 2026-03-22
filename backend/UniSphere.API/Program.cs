@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using UniSphere.API.Services;
 using System.Text;
+using UniSphere.Core.Interfaces;
+using UniSphere.Infrastructure.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Controller servislerini ekler
 builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<IClubRepository, ClubRepository>();
 
 // Swagger/OpenAPI desteğini etkinleştirir.
 // API endpointlerinin otomatik dokümantasyonunu üretir ve Swagger UI üzerinden test edilebilmesini sağlar.
@@ -59,7 +62,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var app = builder.Build();
 
 
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
@@ -72,7 +75,7 @@ using (var scope = app.Services.CreateScope())
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Veritabanı migration işlemi sırasında bir hata oluştu.");
     }
-}
+}*/
 
 // Swagger arayüzünü aktif eder
 app.UseSwagger();
