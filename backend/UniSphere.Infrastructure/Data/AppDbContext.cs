@@ -14,4 +14,6 @@ public class AppDbContext : DbContext
 
     // Users tablosunu temsil eder
     public DbSet<User> Users { get; set; }
+    public DbSet<Event> Events {get; set;}
+    public DbSet<Club> Clubs {get; set;}
 }
