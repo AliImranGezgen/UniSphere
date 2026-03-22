@@ -62,7 +62,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var app = builder.Build();
 
 
-/*using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
@@ -75,7 +75,7 @@ var app = builder.Build();
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Veritabanı migration işlemi sırasında bir hata oluştu.");
     }
-}*/
+}
 
 // Swagger arayüzünü aktif eder
 app.UseSwagger();
