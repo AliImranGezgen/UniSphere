@@ -1,21 +1,59 @@
-import React from 'react';
-import EventForm from './components/EventForm';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import React from "react";
+import EventForm from "./components/EventForm";
 
+// Ana uygulama bileşeni
 function App() {
   return (
-    <div style={{ backgroundColor: '#f4f4f4', minHeight: '100vh', padding: '40px 20px', fontFamily: 'sans-serif' }}>
-      
-      {/* Hocanın göreceği şık bir başlık */}
-      <div style={{ maxWidth: '600px', margin: '0 auto', marginBottom: '30px', textAlign: 'center' }}>
-        <h1 style={{ color: '#007BFF', marginBottom: '10px' }}>UniSphere</h1>
-        <p style={{ color: '#555', fontSize: '18px' }}>Kampüs Etkinlik Yönetim Sistemi</p>
-      </div>
+    // Router tüm uygulamayı sarar
+    <BrowserRouter>
 
-      {/* Formumuzu (Yeni Kayıt modunda) ekrana basıyoruz */}
-      <EventForm />
-      
-    </div>
+      {/* Genel sayfa tasarımı */}
+      <div
+        style={{
+          backgroundColor: "#f4f4f4",
+          minHeight: "100vh",
+          padding: "40px 20px",
+          fontFamily: "sans-serif",
+        }}
+      >
+
+        {/* Üst başlık alanı */}
+        <div
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto",
+            marginBottom: "30px",
+            textAlign: "center",
+          }}
+        >
+          {/* Proje başlığı */}
+          <h1 style={{ color: "#007BFF" }}>UniSphere</h1>
+
+          {/* Alt açıklama */}
+          <p style={{ color: "#555" }}>
+            Kampüs Etkinlik Yönetim Sistemi
+          </p>
+        </div>
+
+        {/* Sayfa yönlendirmeleri burada yapılır */}
+        <Routes>
+
+          {/* Ana sayfa -> Dashboard */}
+          <Route path="/" element={<Dashboard />} />
+
+          {/* Dashboard sayfası */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Etkinlik oluşturma formu */}
+          <Route path="/event-create" element={<EventForm />} />
+
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
+// Component dışa aktarılır
 export default App;
