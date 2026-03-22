@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import React from "react";
 import EventForm from "./components/EventForm";
 
 // Ana uygulama bileşeni
