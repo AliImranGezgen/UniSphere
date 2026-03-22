@@ -1,20 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Dashboard from "./pages/Dashboard/Dashboard"
+import React from 'react';
+import EventForm from './components/EventForm';
 
-// Ana uygulama bileşeni.
-// Router burada tanımlanır ve sayfa yönlendirmeleri yapılır.
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Ana sayfa Dashboard'a yönlendirilir */}
-        <Route path="/" element={<Dashboard />} />
+    <div style={{ backgroundColor: '#f4f4f4', minHeight: '100vh', padding: '40px 20px', fontFamily: 'sans-serif' }}>
+      
+      {/* Hocanın göreceği şık bir başlık */}
+      <div style={{ maxWidth: '600px', margin: '0 auto', marginBottom: '30px', textAlign: 'center' }}>
+        <h1 style={{ color: '#007BFF', marginBottom: '10px' }}>UniSphere</h1>
+        <p style={{ color: '#555', fontSize: '18px' }}>Kampüs Etkinlik Yönetim Sistemi</p>
+      </div>
 
-        {/* Dashboard sayfası için route */}
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
-  )
+      {/* Formumuzu (Yeni Kayıt modunda) ekrana basıyoruz */}
+      <EventForm />
+      
+    </div>
+  );
 }
 
-export default App
+export default App;
