@@ -22,23 +22,16 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           # Buradaki girintilere (boşluklara) dikkat etmelisin:
           script: |
-            echo "--- DAGITIM BASLADI ---"
+            echo "--- TEMİZLİK VE GÜNCELLEME BAŞLADI ---"
+            cd /root/UniSphere || exit
             
-            # Sunucudaki ana klasöre git
-            cd ~/UniSphere
-            
-            echo "1. GitHub'dan en guncel kodlar cekiliyor..."
+            # Sunucudaki yerel değişiklikleri (varsa) çöpe at ve ana daldaki kodu zorla çek
             git fetch --all
             git reset --hard origin/main
             
-            echo "2. Eski konteynerler durduruluyor..."
+            # Dosyanın güncellendiğini loglarda görmek için:
+            cat frontend/package.json
+            
+            # Docker'ı sıfırdan ayağa kaldır
+            docker-compose down
             docker-compose up -d --build
-            
-            echo "3. Yeni sistem (Backend & Frontend) insa ediliyor..."
-            # --build takisi sayesinde Dockerfile'daki degisiklikleri algilar ve derler
-            docker-compose up -d --build
-            
-            echo "4. Temizlik: Kullanilmayan eski imajlar siliniyor..."
-            docker image prune -f
-            
-            echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
