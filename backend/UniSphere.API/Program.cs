@@ -79,7 +79,11 @@ using (var scope = app.Services.CreateScope())
 
 // Swagger arayüzünü aktif eder
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "UniSphere API V1");
+    c.RoutePrefix = "swagger";
+});
 
 
 // Authentication ve Authorization middleware
@@ -100,4 +104,4 @@ app.MapGet("/secure", () => "Bu endpoint JWT ile korunuyor!")
    .RequireAuthorization();
 
 
-app.Run();
+app.Run("http://0.0.0.0:8080");
