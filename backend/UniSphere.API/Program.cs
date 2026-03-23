@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IClubRepository, ClubRepository>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 // Swagger/OpenAPI desteğini etkinleştirir.
 // API endpointlerinin otomatik dokümantasyonunu üretir ve Swagger UI üzerinden test edilebilmesini sağlar.
@@ -61,21 +62,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<AppDbContext>();
-        context.Database.Migrate(); // Tabloları veritabanına otomatik basar
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Veritabanı migration işlemi sırasında bir hata oluştu.");
-    }
-}
 
 // Swagger arayüzünü aktif eder
 app.UseSwagger();

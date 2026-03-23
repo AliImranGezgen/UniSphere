@@ -6,13 +6,13 @@ using UniSphere.Core.Interfaces;
 
 namespace UniSphere.API.Controllers
 {
-    [ApiController] // Bu bir API kontrolcüsüdür
+    [ApiController] // API kontrolcüsü.
     [Route("api/[controller]")] // Adresi: domain.com/api/clubs
     public class ClubsController : ControllerBase
     {
         private readonly IClubRepository _repository;
 
-        // Constructor: Garsona "Git şu depoyla (repository) çalış" diyoruz.
+        // Constructor: Çalışacağımız repoyu işaret ediyoruz.
         public ClubsController(IClubRepository repository)
         {
             _repository = repository;
@@ -20,7 +20,7 @@ namespace UniSphere.API.Controllers
 
         // GÖREV 1: Tüm Kulüpleri Listele (GET api/clubs)
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllClub()
         {
             var entities = await _repository.GetAllClubAsync(); // Depodan ham veriyi al
             var dtos = entities.Select(x => x.ToDto()); // Aşçıya (Mapper) tabaklat

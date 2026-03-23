@@ -24,7 +24,7 @@ namespace UniSphere.Infrastructure.Repositories
         }
 
         // 2. ID'ye Göre Kulüp Getir
-        public async Task<Club> GetByIdAsync(int id)
+        public async Task<Club?> GetByIdAsync(int id)
         {
             // Clubs tablosunda bu ID'yi bul.
             return await _context.Clubs.FindAsync(id);
