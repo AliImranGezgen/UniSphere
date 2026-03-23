@@ -7,7 +7,7 @@ namespace UniSphere.Core.Interfaces
     {
         Task<IEnumerable<Club>> GetAllClubAsync();
         Task DeleteClubAsync(int Id);
-        Task<Club> GetByIdAsync(int Id);
+        Task<Club?> GetByIdAsync(int Id);
         Task<Club> AddAsync(Club club);
 
     }
