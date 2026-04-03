@@ -1,47 +1,46 @@
 version: '3.8'
 
 services:
-  # 1. VERİTABANI (POSTGRESQL)
   db:
     image: postgres:15-alpine
     container_name: unisphere_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: SecretPassword123!
-      POSTGRES_DB: unisphere
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
 
-  # 2. ARKA UÇ (BACKEND - .NET API)
-unisphere_api:
-    build: 
+  unisphere_api:
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: unisphere_api
     environment:
-      - ASPNETCORE_URLS=http://+:8080
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Database=unisphere;Username=postgres;Password=SecretPassword123!
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__DefaultConnection: Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: ${JWT_ISSUER}
+      Jwt__Audience: ${JWT_AUDIENCE}
+      Jwt__ExpireMinutes: ${JWT_EXPIRE_MINUTES}
     ports:
-      - "8085:8080"   # SOL TARAFI 8085 YAPTIK. (İçerisi hala 8080)
+      - "8085:8080"
     depends_on:
       - db
     restart: always
 
-  # 3. ÖN YÜZ (FRONTEND - VITE/REACT)
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: unisphere_web
     ports:
       - "3000:80"
-    restart: always
     depends_on:
       - unisphere_api
+    restart: always
 
 volumes:
   pgdata:
