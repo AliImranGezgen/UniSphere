@@ -7,27 +7,32 @@ using System.Text;
 using UniSphere.Core.Interfaces;
 using UniSphere.Infrastructure.Repositories;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Controller servislerini ekler
+// Controllers
 builder.Services.AddControllers();
+
+// Services
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IClubRepository, ClubRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
-// Swagger/OpenAPI desteğini etkinleştirir.
-// API endpointlerinin otomatik dokümantasyonunu üretir ve Swagger UI üzerinden test edilebilmesini sağlar.
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-// JWT ayarlarını appsettings.json'dan alır
+// JWT settings
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+var jwtKey = jwtSettings["Key"];
 
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is missing. Check environment variables or configuration.");
+}
 
-// JWT Authentication ayarları
+var key = Encoding.UTF8.GetBytes(jwtKey);
+
+// Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -44,26 +49,29 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
 
+// Authorization
+builder.Services.AddAuthorization();
 
-// PostgreSQL veritabanı bağlantısını sisteme ekler
+// Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Database connection string is missing. Check environment variables or configuration.");
+}
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
-
 var app = builder.Build();
 
-
-// Swagger arayüzünü aktif eder
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -71,23 +79,16 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-
-// Authentication ve Authorization middleware
+// Middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-// Controller endpointlerini aktif eder
+// Controllers
 app.MapControllers();
 
-
-// Basit test endpointi
+// Health/Test endpoints
 app.MapGet("/", () => "UniSphere API Çalışıyor!");
-
-
-// JWT korumalı test endpointi
 app.MapGet("/secure", () => "Bu endpoint JWT ile korunuyor!")
    .RequireAuthorization();
-
 
 app.Run("http://0.0.0.0:8080");
