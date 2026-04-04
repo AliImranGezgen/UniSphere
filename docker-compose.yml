@@ -16,15 +16,17 @@ services:
     restart: always
 
   # 2. ARKA UÇ (BACKEND - .NET API)
-  unisphere_api:
+unisphere_api:
     build: 
       context: ./backend
       dockerfile: Dockerfile
     container_name: unisphere_api
     environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=db;Database=unisphere;Username=postgres;Password=SecretPassword123!
     ports:
-      - "8080:8080"
+      - "8085:8080"   # SOL TARAFI 8085 YAPTIK. (İçerisi hala 8080)
     depends_on:
       - db
     restart: always

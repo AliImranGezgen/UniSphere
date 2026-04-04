@@ -81,7 +81,7 @@ public class AuthController : ControllerBase
     [HttpGet("profile")]
     public IActionResult Profile()
     {
-        return Ok("Giriş yapmış kullanıcı erişti");
+        return Ok("Kullanıcı giriş yaptı, profil bilgileri burada gösterilebilir");
     }
 
     // SADECE ADMIN erişebilir
