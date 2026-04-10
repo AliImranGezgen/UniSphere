@@ -2,44 +2,98 @@
 
 ![UniSphere Sistem Mimarisi](./mimari_2.png)
 
-Bu belge, UniSphere projesinin canlı sunucu (Production) üzerindeki ağ mimarisini, port yapılandırmalarını ve veri akışını açıklamaktadır. Proje, Docker konteynerleri üzerinden ayağa kaldırılmaktadır.
+Bu belge, UniSphere projesinin canlı sunucu (Production) üzerindeki ağ mimarisini, port yapılandırmalarını ve veri akışını açıklamaktadır. Proje Docker konteynerleri üzerinden çalışmaktadır.
+
+---
 
 ## 1. Port Haritası (Public ve Container İçi Portlar)
 
-Sistemdeki servislerin dış dünyaya açık olan (Public) ve sadece Docker'ın kendi iç ağında (Container içi) konuşan portları aşağıdaki gibidir:
+Sistemdeki servislerin dış dünyaya açık olan (Public) ve Docker iç ağına özel portları aşağıdaki gibidir:
 
-- **Frontend (unisphere_web):**
-  - **Public Port (Dış Kapı):** `3000`
-  - **Container İçi Port:** `80` (Nginx tarafından dinlenir)
-- **Backend API (unisphere_api):**
-  - **Public Port (Dış Kapı):** `8085`
-  - **Container İçi Port:** `8080` (Kestrel / C# .NET tarafından dinlenir)
-- **Database (unisphere_db):**
-  - **Public Port:** Kapalı (Dışarıya kapalıdır, güvenlik için izole edilmiştir).
-  - **Container İçi Port:** `5432` (Sadece API konteyneri erişebilir).
+### Frontend (unisphere_web)
 
----
+- **Public Port:** `3000`
+- **Container Port:** `80` (Nginx static file server)
 
-## 2. İstek Akışı (Frontend → Backend)
+### Backend API (unisphere_api)
 
-Kullanıcının tarayıcısından çıkan bir isteğin veritabanına ulaşana kadar izlediği yol şu şekildedir:
+- **Public Port:** `8080`
+- **Container Port:** `8080` (.NET Kestrel server)
 
-1.  **Kullanıcı Girişi:** Kullanıcı tarayıcıdan `http://<sunucu_ip>:3000` adresine girer.
-2.  **Arayüzün Yüklenmesi:** İstek, Frontend konteynerindeki Nginx'e (Port 80) ulaşır ve React dosyaları kullanıcının tarayıcısına gönderilir.
-3.  **API İsteği:** Kullanıcı bir işlem yaptığında (örn. Giriş Yap), React uygulaması doğrudan Backend'in dışarıya açık olan adresine (`http://<sunucu_ip>:8085/api/...`) bir HTTP isteği atar.
-4.  **Veritabanı İşlemi:** Backend API, bu isteği alır ve Docker iç ağı üzerinden (güvenli bir şekilde) PostgreSQL veritabanına (`unisphere_db:5432`) bağlanarak veriyi çeker/yazar.
+### Database (unisphere_db)
+
+- **Public Port:** `5432` ⚠️ (şu an dışarı açık)
+- **Container Port:** `5432` (PostgreSQL)
+
+> ⚠️ Production ortamında güvenlik için database portunun dışarıya kapatılması önerilir.
 
 ---
 
-## 3. Nginx ve Reverse Proxy Durumu
+## 2. İstek Akışı (Frontend → Backend → Database)
 
-Sistem mimarimizde canlı sunucunun ana işletim sisteminde (Host) bağımsız bir merkezi Nginx / Reverse Proxy kurulu **değildir**. Trafik doğrudan Docker portlarına gelmektedir.
+Kullanıcının tarayıcısından başlayan veri akışı şu şekildedir:
 
-Ancak **konteynerize edilmiş (containerized)** bir Nginx yapısı mevcuttur:
+1. **Kullanıcı Girişi** Kullanıcı `http://<sunucu_ip>:3000` adresine erişir.
 
-- Frontend uygulamasını (React/Vite) canlıya almak için, Frontend Dockerfile'ı içinde bir Nginx imajı kullanılmıştır.
-- Bu gömülü Nginx, sadece statik Frontend dosyalarını içeride Port 80 üzerinden yayınlama görevini üstlenir.
-- Trafiği `/api` ve `/` olarak dağıtan merkezi bir "Trafik Polisi" yoktur; her iki servis de kendi dış portları üzerinden (3000 ve 8085) bağımsız olarak çalışır.
+2. **Frontend Sunumu** İstek, frontend container içindeki Nginx’e (port 80) ulaşır ve React uygulaması yüklenir.
 
-* **Trafiği Yönetimi:** Trafiği `/api` ve `/` olarak dağıtan merkezi bir "Trafik Polisi" yoktur; her iki servis de kendi dış portları üzerinden (3000 ve 8085) bağımsız olarak çalışır.
-* **SPA Desteği:** Ayrıca React Router (SPA) yapısının bozulmaması ve sayfa yenilemelerinde 404 hatası alınmaması için Nginx üzerinde `try_files` yönlendirmesi yapılandırılmıştır.
+3. **API İsteği** Frontend uygulaması backend’e doğrudan HTTP isteği gönderir:  
+   `http://<sunucu_ip>:8080/api/...`
+
+4. **Backend İşlemi** Backend isteği işler ve veritabanına bağlanır.
+
+5. **Database Erişimi** Backend, Docker internal network üzerinden şu bağlantıyı kullanır:
+
+```text
+Host=db
+Port=5432
+```
+
+---
+
+## 3. Docker Network Yapısı
+
+Tüm servisler aynı Docker ağı üzerinde çalışmaktadır.
+Servisler birbirine container adı ile erişir:
+
+- **Backend** → `db:5432`
+- **Frontend** → backend’e public URL üzerinden erişir
+
+Bu yapı sayesinde servisler IP yerine servis adıyla haberleşir.
+
+---
+
+## 4. Nginx ve Reverse Proxy Durumu
+
+Sistemde host seviyesinde merkezi bir reverse proxy (Nginx) bulunmamaktadır.
+Trafik doğrudan container portlarına yönlenmektedir:
+
+- **Frontend** → `:3000`
+- **Backend** → `:8080`
+
+**Container içi Nginx:** Frontend container içinde bir Nginx bulunmaktadır. Bu Nginx:
+
+- React build dosyalarını sunar
+- SPA routing için `try_files` kullanır
+
+> **Önemli:** `/api` routing için merkezi proxy yoktur. Frontend backend’e doğrudan istek atar.
+
+---
+
+## 5. Genel Sistem Akışı
+
+```text
+[Browser]
+   |
+   | :3000
+   v
+[Frontend (Nginx)]
+   |
+   | HTTP
+   v
+[Backend (.NET API)]
+   |
+   | TCP (Docker Network)
+   v
+[PostgreSQL]
+```

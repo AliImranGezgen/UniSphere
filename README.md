@@ -17,6 +17,29 @@ Projemiz, modern web standartlarına uygun olarak **Monorepo** mantığıyla gel
 
 > **Mimari Detaylar ve Sunucu Yapılandırması:** Sistemin canlı sunucudaki port akışları ve Docker network mimarisi için lütfen [Deployment Topolojisi](./DEPLOYMENT.md) belgesini inceleyiniz.
 
+---
+
+## 📁 Proje Yapısı
+
+```text
+unisphere/
+│
+├── backend/              # .NET API
+│   ├── UniSphere.API
+│   ├── UniSphere.Core
+│   ├── UniSphere.Infrastructure
+│   └── UniSphere.Tests
+│
+├── frontend/             # React (Vite)
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── docker-compose.yml    # Tüm servisleri ayağa kaldırır
+├── DEPLOYMENT.md         # Deployment topolojisi
+└── README.md             # Ana dokümantasyon
+```
+
 ## 🛠️ Hızlı Kurulum (Docker ile)
 
 Sistemi tek bir komutla ayağa kaldırmak için bilgisayarınızda Docker'ın kurulu olması yeterlidir.
