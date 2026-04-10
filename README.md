@@ -1,3 +1,8 @@
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)
+![.NET](https://img.shields.io/badge/.NET-Backend-purple?logo=dotnet)
+![React](https://img.shields.io/badge/React-Frontend-blue?logo=react)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?logo=postgresql)
+
 # 🌐 UniSphere
 
 UniSphere, modern ve dinamik bir kampüs etkinlik ve topluluk yönetim sistemidir. Öğrencilerin, kulüp yöneticilerinin ve sistem yöneticilerinin kampüs hayatını tek bir platform üzerinden yönetmesini ve takip etmesini sağlar.
