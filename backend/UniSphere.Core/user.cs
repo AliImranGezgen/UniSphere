@@ -16,7 +16,7 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
 
     // Kullanıcının sistem içindeki rolü (User, Admin vb.)
-    public string Role { get; set; } = "User";
+    public string Role { get; set; } = UserRoles.Student;
 
     // Kullanıcının sisteme kayıt olduğu tarih
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
