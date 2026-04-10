@@ -1,5 +1,7 @@
 # 🗺️ UniSphere Deployment Topolojisi
 
+![UniSphere Sistem Mimarisi](./mimari_2.png)
+
 Bu belge, UniSphere projesinin canlı sunucu (Production) üzerindeki ağ mimarisini, port yapılandırmalarını ve veri akışını açıklamaktadır. Proje, Docker konteynerleri üzerinden ayağa kaldırılmaktadır.
 
 ## 1. Port Haritası (Public ve Container İçi Portlar)
