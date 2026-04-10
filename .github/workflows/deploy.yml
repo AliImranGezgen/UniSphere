@@ -1,45 +1,51 @@
-
 name: UniSphere Continuous Deployment (CD)
 
 on:
   push:
-    branches: [ "main" ] # Sadece main dalına kod gönderildiğinde çalışır
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Kodları GitHub'dan al (Checkout)
       - name: Checkout Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. Sunucuya bağlan ve Docker komutlarını çalıştır
-      - name: SSH ile Sunucuya Baglan ve Guncelle
+      - name: SSH ile Sunucuya Bağlan ve Deploy Et
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          # Buradaki girintilere (boşluklara) dikkat etmelisin:
           script: |
             echo "--- DAGITIM BASLADI ---"
-            
-            # Sunucudaki ana klasöre git
-            cd ~/UniSphere
-            
-            echo "1. GitHub'dan en guncel kodlar cekiliyor..."
+
+            cd ~/UniSphere || exit 1
+
+            echo "1. Mevcut branch:"
+            git branch --show-current
+
+            echo "2. GitHub'dan en guncel kodlar cekiliyor..."
             git fetch --all
             git reset --hard origin/main
-            
-            echo "2. Eski konteynerler durduruluyor..."
+
+            echo "3. Guncel commit:"
+            git log --oneline -n 1
+
+            echo "4. Frontend package.json kontrolu:"
+            grep '"@eslint/js"' frontend/package.json || true
+            grep '"eslint"' frontend/package.json || true
+
+            echo "5. Sistem yeniden build ediliyor..."
+            docker-compose down
             docker-compose up -d --build
-            
-            echo "3. Yeni sistem (Backend & Frontend) insa ediliyor..."
-            # --build takisi sayesinde Dockerfile'daki degisiklikleri algilar ve derler
-            docker-compose up -d --build
-            
-            echo "4. Temizlik: Kullanilmayan eski imajlar siliniyor..."
+
+            echo "6. Konteyner durumlari:"
+            docker ps
+
+            echo "7. Temizlik: Kullanilmayan eski imajlar siliniyor..."
             docker image prune -f
-            
+
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
