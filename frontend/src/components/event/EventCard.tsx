@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { Event } from '../../types/event';
 
 export default function EventCard({ event }: { event: Event }) {

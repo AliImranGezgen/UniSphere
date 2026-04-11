@@ -91,58 +91,7 @@
   font-weight: 400;
 }
 
-.social-btns {
-  display: flex;
-  gap: 12px;
-}
 
-.social-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: #176BFF;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.social-btn:hover {
-  transform: translateY(-2px);
-  background-color: #1052ca;
-}
-
-.social-btn svg {
-  width: 18px;
-  height: 18px;
-  fill: white;
-}
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #333;
-  margin-bottom: 25px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.auth-divider::before, .auth-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #e1e1e1;
-}
-
-.auth-divider:not(:empty)::before {
-  margin-right: .8em;
-}
-
-.auth-divider:not(:empty)::after {
-  margin-left: .8em;
-}
 
 .auth-form {
   display: flex;

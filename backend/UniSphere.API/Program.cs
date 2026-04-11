@@ -12,6 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 // API endpoint'leri için Controller desteğini ekliyoruz (Gelen HTTP isteklerini karşılamak için)
 builder.Services.AddControllers();
 
+// CORS Ayarları: Frontend (React) projemizden gelen isteklere izin veriyoruz.
+// Tarayıcı güvenliği (Same-Origin Policy) gereği, farklı kökenlerden gelen istekler varsayılan olarak engellenir.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Vite (Frontend) projesinin varsayılan adresi
+              .AllowAnyHeader()  // Tüm HTTP başlıklarına (Authentication vb.) izin ver
+              .AllowAnyMethod();  // Tüm HTTP metodlarına (GET, POST, PUT, DELETE) izin ver
+    });
+});
+
 // Servisler için Dependency Injection (DI) kayıtları
 // AddScoped: Her HTTP isteği için bir kez oluşturulur.
 builder.Services.AddScoped<TokenService>(); // JWT üretimi vb. işlemler için eklendi
@@ -84,6 +96,9 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "UniSphere API V1");
     c.RoutePrefix = "swagger"; // Tarayıcıda /swagger yazarak api dokümantasyonuna ulaşabilmek için
 });
+
+// CORS politikasını etkinleştiriyoruz (Authentication'dan önce gelmelidir)
+app.UseCors("AllowFrontend");
 
 // Kimlik doğrulama işlemini ara katmana (Middleware) ekliyoruz (Kimsiniz?)
 app.UseAuthentication();
