@@ -11,4 +11,11 @@ public class Event
     public string Location { get; set; } = string.Empty;
     public int ClubId { get; set; }
     public Club Club { get; set; } = null!;
+
+    // Navigation properties
+    // Etkinliğe yapılan tüm başvurular
+    public ICollection<Application> Applications { get; set; } = new List<Application>();
+    
+    // Etkinliğe bırakılan tüm yorumlar
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

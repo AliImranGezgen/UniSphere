@@ -8,5 +8,11 @@ namespace UniSphere.Core
         public int Rating { get; set; } //Evente verilen puanı belirler
         public string Comment { get; set; } = string.Empty; //evente yapılan yorumu tutar.
         public DateTime CreatedAt { get; set; } //yorum yapılan saati tutar.
+
+        // Navigation properties
+        // Yorumu yapan kullanıcı bilgisi
+        public User User { get; set; } = null!;
+        // Yorum yapılan etkinlik bilgisi
+        public Event Event { get; set; } = null!;
     }
 }
