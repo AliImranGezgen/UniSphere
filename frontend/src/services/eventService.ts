@@ -1,16 +1,16 @@
-import axios from "axios"
-import type { Event } from "../types/event"
+import { api } from './api';
+import type { Event } from '../types/event';
 
-// Backend API adresi
-const API_URL = "http://localhost:5182/api/events"
-
-// Backend'den tüm etkinlikleri getirir
 export const getEvents = async (): Promise<Event[]> => {
-  const response = await axios.get(API_URL)
-  return response.data
-}
+  const response = await api.get('/events');
+  return response.data;
+};
 
-// Belirli bir etkinliği siler
+export const createEvent = async (data: Partial<Event>) => {
+  const response = await api.post('/events', data);
+  return response.data;
+};
+
 export const deleteEvent = async (id: number) => {
-  await axios.delete(`${API_URL}/${id}`)
-}
+  await api.delete('/events/' + id);
+};

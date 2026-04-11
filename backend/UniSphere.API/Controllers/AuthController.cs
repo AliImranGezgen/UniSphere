@@ -5,6 +5,7 @@ using UniSphere.Infrastructure.Data;
 using UniSphere.Core;
 using Microsoft.AspNetCore.Authorization;
 using BCrypt.Net;
+using System.Security.Claims;
 
 namespace UniSphere.API.Controllers;
 
@@ -39,7 +40,7 @@ public class AuthController : ControllerBase
             Name = dto.Name,
             Email = dto.Email,
             PasswordHash = passwordHash,
-            Role = "User",
+            Role = UserRoles.Student,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -81,11 +82,30 @@ public class AuthController : ControllerBase
     [HttpGet("profile")]
     public IActionResult Profile()
     {
-        return Ok("Kullanıcı giriş yaptı, profil bilgileri burada gösterilebilir");
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return NotFound("Kullanıcı bulunamadı.");
+        }
+
+        return Ok(new
+        {
+            user.Id,
+            user.Name,
+            user.Email,
+            user.Role,
+            user.CreatedAt
+        });
     }
 
     // SADECE ADMIN erişebilir
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     [HttpGet("admin")]
     public IActionResult Admin()
     {
