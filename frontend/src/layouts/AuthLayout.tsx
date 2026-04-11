@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Outlet } from 'react-router-dom';
 import illustration from '../assets/auth-illustration.png';
 import './AuthLayout.css';
