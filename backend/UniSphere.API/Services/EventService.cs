@@ -51,7 +51,8 @@ namespace UniSphere.API.Services
             if (dto.Capacity < 0)
                 throw new Exception("Capacity negatif olamaz.");
 
-            if (dto.EventDate < DateTime.UtcNow)
+            var parsedDate = EventMapping.ParseEventDate(dto.EventDate);
+            if (parsedDate < DateTime.UtcNow)
                 throw new Exception("Geçmiş tarihli etkinlik oluşturulamaz.");
 
             await CheckIfManagerOwnsClubAsync(dto.ClubId, userId);
@@ -70,7 +71,8 @@ namespace UniSphere.API.Services
             if (dto.Capacity < 0)
                 throw new Exception("Capacity negatif olamaz.");
 
-            if (dto.EventDate < DateTime.UtcNow)
+            var parsedDate = EventMapping.ParseEventDate(dto.EventDate);
+            if (parsedDate < DateTime.UtcNow)
                 throw new Exception("Geçmiş tarihli etkinlik güncellenemez.");
 
             await CheckIfManagerOwnsClubAsync(dto.ClubId, userId);
@@ -81,7 +83,7 @@ namespace UniSphere.API.Services
 
             existingEvent.Title = dto.Title;
             existingEvent.Description = dto.Description;
-            existingEvent.EventDate = dto.EventDate;
+            existingEvent.EventDate = parsedDate;
             existingEvent.Location = dto.Location;
             existingEvent.Capacity = dto.Capacity;
             existingEvent.ClubId = dto.ClubId;

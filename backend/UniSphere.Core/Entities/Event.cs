@@ -20,6 +20,9 @@ public class Event
     // Etkinlik konumu
     public string Location { get; set; } = string.Empty;
 
+    // Etkinlik afiş görseli dosya yolu (opsiyonel)
+    public string? PosterImagePath { get; set; }
+
     // Hangi kulübe ait olduğu
     public int ClubId { get; set; }
 

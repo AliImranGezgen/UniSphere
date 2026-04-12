@@ -94,6 +94,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+// Yüklenen afiş dosyaları için uploads/ klasörünü oluştur
+var uploadsPath = Path.Combine(app.Environment.WebRootPath
+    ?? app.Environment.ContentRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath);
+
+// Statik dosya servisi: yüklenen afişler /uploads/{filename} üzerinden erişilebilir
+app.UseStaticFiles();
+
+// ─── Otomatik Migration ─────────────────────────────────────────────────────
+// Uygulama başlarken bekleyen tüm EF Core migration'larını otomatik uygular.
+// Bu sayede 'dotnet ef database update' komutuna gerek kalmaz.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 // Global Exception Handler (Tüm hatalar Response dönmeden önce burada yakalanıp formatlanır)
 app.UseMiddleware<ExceptionMiddleware>();
 
