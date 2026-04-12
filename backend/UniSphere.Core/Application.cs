@@ -18,5 +18,11 @@ namespace UniSphere.Core
         public bool CheckedIn { get; set; } = false;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Başvuruyu yapan kullanıcıya erişim
+        public User? User { get; set; }
+
+        // Başvurunun ait olduğu etkinliğe erişim
+        public Event? Event { get; set; }
     }
 }
