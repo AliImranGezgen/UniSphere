@@ -29,21 +29,13 @@ export default function Navbar() {
         height: '4rem' 
       }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-          <div style={{
-            width: '32px', height: '32px',
-            backgroundColor: 'var(--primary)',
-            color: 'white',
-            borderRadius: '8px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 'bold', fontSize: '1.2rem'
-          }}>
-            U
-          </div>
-          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            UniSphere
-          </span>
-        </Link>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+  <img 
+    src="/UniSphereLogoSiyah.png" 
+    alt="UniSphere Logo"
+    style={{ height: '200px', width: 'auto' }}
+  />
+</Link>
 
         {/* Desktop Navigation */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
