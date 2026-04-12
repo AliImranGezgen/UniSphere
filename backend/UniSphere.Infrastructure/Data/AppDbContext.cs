@@ -16,6 +16,14 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Event> Events { get; set; }
     public DbSet<Club> Clubs { get; set; }
+<<<<<<< HEAD
+
+    // Başvurular (Applications)
+    public DbSet<Application> Applications { get; set; }
+
+    // Kullanıcı yorumları
+    public DbSet<Review> Reviews { get; set; }
+=======
     public DbSet<Application> Applications { get; set; }
     public DbSet<Review> Reviews { get; set; }
 
@@ -75,4 +83,5 @@ public class AppDbContext : DbContext
             entity.HasIndex(r => r.EventId);
         });
     }
+>>>>>>> ff6e3969a89ad8756b4b2a40dc9db6db5d426629
 }

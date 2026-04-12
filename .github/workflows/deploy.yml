@@ -22,6 +22,7 @@ jobs:
           script: |
             echo "--- DAGITIM BASLADI ---"
 
+
             cd ~/UniSphere || exit 1
 
             echo "1. Mevcut branch:"
@@ -40,6 +41,7 @@ jobs:
 
             echo "5. Sistem yeniden build ediliyor..."
             docker-compose down
+
             docker-compose up -d --build
 
             echo "6. Konteyner durumlari:"
@@ -47,5 +49,6 @@ jobs:
 
             echo "7. Temizlik: Kullanilmayan eski imajlar siliniyor..."
             docker image prune -f
+
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"

@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using UniSphere.API.DTOs;
+
 using UniSphere.API.Mappings;
 using UniSphere.Core.Interfaces;
 
 
 namespace UniSphere.API.Controllers
 {
-    [ApiController] 
+    [ApiController]
     [Route("api/[controller]")]
     public class EventController : ControllerBase
     {
@@ -44,9 +45,9 @@ namespace UniSphere.API.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var entity = await _repository.GetByEventIdAsync(id);
-            
+
             // Eğer veritabanında böyle bir ID yoksa 404 (Bulunamadı) dön
-            if (entity == null) 
+            if (entity == null)
                 return NotFound("Aradığınız etkinlik bulunamadı.");
 
             return Ok(entity.ToDto());
@@ -57,12 +58,12 @@ namespace UniSphere.API.Controllers
         public async Task<IActionResult> Update(int id, EventUpdateDto dto)
         {
             // Güvenlik: Adresteki ID ile gönderilen paketteki ID aynı mı?
-            if (id != dto.EventId) 
+            if (id != dto.EventId)
                 return BadRequest("URL'deki ID ile DTO içindeki ID uyuşmuyor!");
 
             // Veritabanında gerçekten böyle bir etkinlik var mı diye kontrol et
             var existingEvent = await _repository.GetByEventIdAsync(id);
-            if (existingEvent == null) 
+            if (existingEvent == null)
                 return NotFound("Güncellenecek etkinlik bulunamadı.");
 
             // Kilerdeki malzemenin (Entity) üzerine, müşteriden gelen yeni bilgileri (DTO) yazıyoruz
@@ -86,13 +87,14 @@ namespace UniSphere.API.Controllers
         {
             // Silmeden önce böyle bir etkinlik var mı diye bakıyoruz
             var existingEvent = await _repository.GetByEventIdAsync(id);
-            if (existingEvent == null) 
+            if (existingEvent == null)
                 return NotFound("Silinecek etkinlik zaten yok.");
 
             await _repository.DeleteAsync(id);
 
             // 204 No Content: "İşlem başarıyla yapıldı.".
-            return NoContent(); 
+            return NoContent();
+
         }
     }
 }
