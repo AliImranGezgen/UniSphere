@@ -27,4 +27,7 @@ public class User
 
     // Kullanıcının etkinliklere bıraktığı yorumlar
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    // Kullanıcıya ait bildirimlerin listesi (Bire Çok İlişki)
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

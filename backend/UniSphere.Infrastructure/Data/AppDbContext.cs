@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Club> Clubs { get; set; }
     public DbSet<Application> Applications { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Notification> Notifications { get; set; } // Kullanıcı bildirimlerini tutan tablo
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,6 +75,18 @@ public class AppDbContext : DbContext
             // Performans için Index tanımları
             entity.HasIndex(r => r.UserId);
             entity.HasIndex(r => r.EventId);
+        });
+
+        // Notification (Bildirim) Tablosu Yapılandırması
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            // İlişki: Bir kullanıcının birden fazla bildirimi olabilir
+            entity.HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId);
+
+            // Veritabanında UserId bazlı arama (kullanıcının bildirimlerini listeleme) yapılacağı için Index ekliyoruz.
+            entity.HasIndex(n => n.UserId);
         });
     }
 }
