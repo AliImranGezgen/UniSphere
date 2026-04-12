@@ -1,34 +1,21 @@
 namespace UniSphere.Core;
 
-// Sistemdeki etkinliklerin entityleri
+//Sistemdeki etkinliklerine entitiyleri
 public class Event
 {
     public int Id { get; set; }
-
-    // Etkinliğin başlığı
     public string Title { get; set; } = string.Empty;
-
-    // Katılımcı kapasitesi
     public int Capacity { get; set; }
-
-    // Etkinlik açıklaması
     public string Description { get; set; } = string.Empty;
-
-    // Etkinlik tarihi
     public DateTime EventDate { get; set; }
-
-    // Etkinlik konumu
     public string Location { get; set; } = string.Empty;
-
-    // Hangi kulübe ait olduğu
     public int ClubId { get; set; }
-
-    // Kulüp ilişkisi (Navigation Property)
     public Club Club { get; set; } = null!;
 
-    // 🔥 Bu etkinliğe yapılan başvurular
+    // Navigation properties
+    // Etkinliğe yapılan tüm başvurular
     public ICollection<Application> Applications { get; set; } = new List<Application>();
-
-    // 🔥 Bu etkinlik için bırakılan yorumlar
+    
+    // Etkinliğe bırakılan tüm yorumlar
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
