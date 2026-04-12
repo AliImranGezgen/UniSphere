@@ -20,7 +20,7 @@ export default function LoginPage() {
       await authService.login({ email, password });
       // Başarılıysa dashboard'a yönlendir
       navigate('/student/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       // Hata durumunda backend'den gelen mesajı göster
       if (axios.isAxiosError(err) && err.response) {
         setError(err.response.data || 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
