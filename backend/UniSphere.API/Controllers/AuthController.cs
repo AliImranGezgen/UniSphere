@@ -82,7 +82,10 @@ public class AuthController : ControllerBase
     [HttpGet("profile")]
     public IActionResult Profile()
     {
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec72bca364f87b3c2b2d3a7eac7a826e4361e157
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
         {
@@ -103,7 +106,10 @@ public class AuthController : ControllerBase
             user.Role,
             user.CreatedAt
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec72bca364f87b3c2b2d3a7eac7a826e4361e157
     }
 
     // SADECE ADMIN erişebilir

@@ -29,7 +29,11 @@ public class AppDbContext : DbContext
             // Unique Constraint: Bir kullanıcı bir etkinliğe sadece bir kez başvurabilir
             entity.HasIndex(a => new { a.UserId, a.EventId }).IsUnique();
 
+<<<<<<< HEAD
             // Status (Durum) alanını veritabanında okunabilirlik için string olarak saklar
+=======
+            // Status (Durum) alanını veritabanında okunabilirlik için string olarak saklar (Enum mapping)
+>>>>>>> ec72bca364f87b3c2b2d3a7eac7a826e4361e157
             entity.Property(a => a.Status)
                 .HasConversion<string>();
 
@@ -54,7 +58,11 @@ public class AppDbContext : DbContext
             // Unique Constraint: Bir kullanıcı bir etkinliğe sadece bir yorum bırakabilir
             entity.HasIndex(r => new { r.UserId, r.EventId }).IsUnique();
 
+<<<<<<< HEAD
             // Comment (Yorum) alanı için karakter sınırı
+=======
+            // Comment (Yorum) alanı için karakter sınırı ve zorunluluk kontrolleri
+>>>>>>> ec72bca364f87b3c2b2d3a7eac7a826e4361e157
             entity.Property(r => r.Comment)
                 .HasMaxLength(1000);
 
