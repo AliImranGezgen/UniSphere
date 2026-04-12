@@ -22,21 +22,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "--- DAGITIM BASLADI ---"
-<<<<<<< HEAD
-            
-            # Sunucudaki ana klasöre git
-            cd ~/UniSphere
-            
-            echo "1. GitHub'dan en guncel kodlar cekiliyor..."
-            git fetch --all
-            git reset --hard origin/main
-            
-            echo "2. Eski konteynerler durduruluyor..."
-            docker-compose up -d --build
-            
-            echo "3. Yeni sistem (Backend & Frontend) insa ediliyor..."
-            # --build takisi sayesinde Dockerfile'daki degisiklikleri algilar ve derler
-=======
+
 
             cd ~/UniSphere || exit 1
 
@@ -56,7 +42,7 @@ jobs:
 
             echo "5. Sistem yeniden build ediliyor..."
             docker-compose down
->>>>>>> 0cb596d0d413d0c042cdb2174793f8af6af22593
+
             docker-compose up -d --build
 
             echo "6. Konteyner durumlari:"
@@ -64,10 +50,7 @@ jobs:
 
             echo "7. Temizlik: Kullanilmayan eski imajlar siliniyor..."
             docker image prune -f
-<<<<<<< HEAD
-            
-            echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
-=======
+
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
->>>>>>> 0cb596d0d413d0c042cdb2174793f8af6af22593
+

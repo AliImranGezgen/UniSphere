@@ -8,15 +8,7 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-<<<<<<< HEAD
 
-  "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "typescript": "^5.2.0",
-    "vite": "^5.0.0"
-=======
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/react": "^18.2.0",
@@ -40,6 +32,6 @@
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.0",
     "three": "^0.183.2"
->>>>>>> 0cb596d0d413d0c042cdb2174793f8af6af22593
+
   }
 }

@@ -17,6 +17,11 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>(); // JWT üretimi vb. işlemler için eklendi
 builder.Services.AddScoped<IClubRepository, ClubRepository>(); // Kulüp veritabanı işlemleri için
 builder.Services.AddScoped<IEventRepository, EventRepository>(); // Etkinlik veritabanı işlemleri için
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // Başvuru işlemleri için Repository
+builder.Services.AddScoped<EventService>(); // Event işlemleri için Service katmanı
+builder.Services.AddScoped<ApplicationService>(); // Başvuru işlemleri için Service katmanı
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Review işlemleri için Repository
+builder.Services.AddScoped<ReviewService>(); // Review işlemleri için Service
 
 // CORS Ayarları: Frontend (React) projemizden gelen isteklere izin veriyoruz.
 // Tarayıcı güvenliği (Same-Origin Policy) gereği, farklı kökenlerden gelen istekler varsayılan olarak engellenir.
