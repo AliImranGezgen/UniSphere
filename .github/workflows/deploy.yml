@@ -41,33 +41,37 @@ jobs:
             grep '"eslint"' frontend/package.json || true
 
             echo "5. Frontend image build ediliyor..."
-            docker-compose build frontend
+            docker compose build frontend
 
-            echo "6. Eski frontend container siliniyor..."
-            docker rm -f unisphere_web || true
+            echo "6. Frontend eski container kalintilari temizleniyor..."
+            docker ps -aq --filter "name=unisphere_web" | xargs -r docker rm -f
+            docker ps -aq --filter "name=frontend" | xargs -r docker rm -f
 
             echo "7. Frontend yeniden ayağa kaldırılıyor..."
-            docker-compose up -d --no-deps frontend
+            docker compose up -d --no-deps frontend
 
             echo "8. Backend image build ediliyor..."
-            docker-compose build unisphere_api
+            docker compose build unisphere_api
 
-            echo "9. Eski backend container siliniyor..."
-            docker rm -f unisphere_api || true
+            echo "9. Backend eski container kalintilari temizleniyor..."
+            docker ps -aq --filter "name=unisphere_api" | xargs -r docker rm -f
 
             echo "10. Backend yeniden ayağa kaldırılıyor..."
-            docker-compose up -d --no-deps unisphere_api
+            docker compose up -d --no-deps unisphere_api
 
-            echo "11. Konteyner durumlari:"
+            echo "11. Orphan / kullanilmayan container temizligi..."
+            docker container prune -f
+
+            echo "12. Konteyner durumlari:"
             docker ps
 
-            echo "12. Son log kontrolu (API):"
-            docker-compose logs --tail=30 unisphere_api || true
+            echo "13. Frontend loglari:"
+            docker compose logs --tail=30 frontend || true
 
-            echo "13. Son log kontrolu (Frontend):"
-            docker-compose logs --tail=30 frontend || true
+            echo "14. Backend loglari:"
+            docker compose logs --tail=30 unisphere_api || true
 
-            echo "14. Temizlik: Kullanilmayan eski imajlar siliniyor..."
+            echo "15. Kullanilmayan image temizligi:"
             docker image prune -f
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
