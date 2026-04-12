@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using UniSphere.API.Attributes; // Özel attribute'umuz için gerekli namespace
 using UniSphere.Core.Entities;
 
 namespace UniSphere.API.DTOs
 {
     // Etkinlik oluşturma sırasında sunucuya gelen verilerin doğruluğunu sağlayan model
+    // multipart/form-data olarak alınır (afiş görseli yüklemek için)
     public class CreateEventDto
     {
         // Etkinlik başlığının boş girilmesini ve 100 karakteri aşmasını engelliyoruz.
@@ -28,9 +28,12 @@ namespace UniSphere.API.DTOs
         [Required(ErrorMessage = "Kulüp bilgisi zorunludur.")]
         public int ClubId { get; set; }
 
-        // Kendi yazdığımız özel attribute (FutureDate) ile geçmişe dönük etkinlik oluşturulmasını engelliyoruz.
+        // EventDate artık string olarak alınıyor. Format: "yyyy-MM-ddTHH:mm" veya "yyyy-MM-dd HH:mm"
+        // Controller bu string'i DateTime'a parse eder, böylece dışarıdan kolay veri girilebilir.
         [Required(ErrorMessage = "Etkinlik tarihi zorunludur.")]
-        [FutureDate]
-        public DateTime EventDate { get; set; } = DateTime.UtcNow;
+        public string EventDate { get; set; } = string.Empty;
+
+        // Opsiyonel afiş görseli (IFormFile - multipart/form-data)
+        public IFormFile? PosterImage { get; set; }
     }
 }

@@ -7,4 +7,5 @@ export interface Event {
   capacity: number;
   clubId: number;
   clubName: string;
+  posterImageUrl?: string | null;
 }
