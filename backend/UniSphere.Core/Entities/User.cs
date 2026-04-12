@@ -24,7 +24,7 @@ public class User
     // Navigation properties
     // Kullanıcının etkinliklere yaptığı başvurular
     public ICollection<Application> Applications { get; set; } = new List<Application>();
-    
+
     // Kullanıcının etkinliklere bıraktığı yorumlar
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

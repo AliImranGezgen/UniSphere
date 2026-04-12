@@ -14,12 +14,16 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: always
 
+
   unisphere_api:
     build:
+
       context: ./backend
       dockerfile: Dockerfile
     container_name: unisphere_api
     environment:
+
+
       ASPNETCORE_URLS: http://+:8080
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ConnectionStrings__DefaultConnection: Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
@@ -29,6 +33,7 @@ services:
       Jwt__ExpireMinutes: ${JWT_EXPIRE_MINUTES}
     ports:
       - "8085:8080"
+
     depends_on:
       - db
     restart: always

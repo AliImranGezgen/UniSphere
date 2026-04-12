@@ -1,6 +1,6 @@
-using UniSphere.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using UniSphere.Core;
+using UniSphere.Core.Interfaces;
 using UniSphere.Infrastructure.Data;
 
 namespace UniSphere.Infrastructure.Repositories
@@ -16,34 +16,37 @@ namespace UniSphere.Infrastructure.Repositories
 
         public async Task<IEnumerable<Event>> GetAllEventsAsync()
         {
-            return await _context.Events.ToListAsync();
+            return await _context.Events
+                .Include(e => e.Club)
+                .ToListAsync();
         }
 
         public async Task<Event?> GetByEventIdAsync(int eventId)
         {
-            return await _context.Events.FindAsync(eventId);
+            return await _context.Events
+                .Include(e => e.Club)
+                .FirstOrDefaultAsync(e => e.Id == eventId);
         }
 
-        public async Task<Event> AddEventAsync(Event newEvent)
+        public async Task<Event> AddEventAsync(Event eventEntity)
         {
-            await _context.AddAsync(newEvent);
+            _context.Events.Add(eventEntity);
             await _context.SaveChangesAsync();
-            return newEvent;
+            return eventEntity;
         }
 
-        public async Task<Event> UpdateEventAsync(Event updateEvent)
+        public async Task UpdateEventAsync(Event eventEntity)
         {
-            _context.Events.Update(updateEvent);
+            _context.Events.Update(eventEntity);
             await _context.SaveChangesAsync();
-            return updateEvent;
         }
 
         public async Task DeleteAsync(int eventId)
         {
-            var eventCheck = await _context.Events.FindAsync(eventId);
-            if (eventCheck != null)
+            var eventEntity = await _context.Events.FindAsync(eventId);
+            if (eventEntity != null)
             {
-                _context.Events.Remove(eventCheck);
+                _context.Events.Remove(eventEntity);
                 await _context.SaveChangesAsync();
             }
         }

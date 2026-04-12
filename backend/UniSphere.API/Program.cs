@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // API endpoint'leri için Controller desteğini ekliyoruz (Gelen HTTP isteklerini karşılamak için)
 builder.Services.AddControllers();
 
+
 // CORS Ayarları: Frontend (React) projemizden gelen isteklere izin veriyoruz.
 // Tarayıcı güvenliği (Same-Origin Policy) gereği, farklı kökenlerden gelen istekler varsayılan olarak engellenir.
 builder.Services.AddCors(options =>
@@ -23,6 +24,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();  // Tüm HTTP metodlarına (GET, POST, PUT, DELETE) izin ver
     });
 });
+
 
 // Servisler için Dependency Injection (DI) kayıtları
 // AddScoped: Her HTTP isteği için bir kez oluşturulur.
@@ -89,12 +91,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+
 // Geliştirme asistanı Swagger'ı uygulamaya dahil ediyoruz
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "UniSphere API V1");
+
     c.RoutePrefix = "swagger"; // Tarayıcıda /swagger yazarak api dokümantasyonuna ulaşabilmek için
+
 });
 
 // CORS politikasını etkinleştiriyoruz (Authentication'dan önce gelmelidir)
@@ -102,6 +108,7 @@ app.UseCors("AllowFrontend");
 
 // Kimlik doğrulama işlemini ara katmana (Middleware) ekliyoruz (Kimsiniz?)
 app.UseAuthentication();
+
 // Yetki kontrol işlemlerini ara katmana ekliyoruz (Bu işlemi yapmaya izniniz var mı?)
 app.UseAuthorization();
 
@@ -110,6 +117,7 @@ app.MapControllers();
 
 // Sağlık kontrolü ve test için Minimal API endpointleri
 app.MapGet("/", () => "UniSphere API Çalışıyor!"); // Herkese açık endpoint
+
 app.MapGet("/secure", () => "Bu endpoint JWT ile korunuyor!")
    .RequireAuthorization(); // Yalnızca giriş yapmış (yetkilendirilmiş) kullanıcılar erişebilir
 
