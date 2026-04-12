@@ -40,22 +40,34 @@ jobs:
             grep '"@eslint/js"' frontend/package.json || true
             grep '"eslint"' frontend/package.json || true
 
-            echo "5. Frontend yeniden build ediliyor..."
-            docker-compose up -d --build frontend
+            echo "5. Frontend image build ediliyor..."
+            docker-compose build frontend
 
-            echo "6. Backend yeniden build ediliyor..."
-            docker-compose up -d --build unisphere_api
+            echo "6. Eski frontend container siliniyor..."
+            docker rm -f unisphere_web || true
 
-            echo "7. Konteyner durumlari:"
+            echo "7. Frontend yeniden ayağa kaldırılıyor..."
+            docker-compose up -d --no-deps frontend
+
+            echo "8. Backend image build ediliyor..."
+            docker-compose build unisphere_api
+
+            echo "9. Eski backend container siliniyor..."
+            docker rm -f unisphere_api || true
+
+            echo "10. Backend yeniden ayağa kaldırılıyor..."
+            docker-compose up -d --no-deps unisphere_api
+
+            echo "11. Konteyner durumlari:"
             docker ps
 
-            echo "8. Son log kontrolu (API):"
+            echo "12. Son log kontrolu (API):"
             docker-compose logs --tail=30 unisphere_api || true
 
-            echo "9. Son log kontrolu (Frontend):"
+            echo "13. Son log kontrolu (Frontend):"
             docker-compose logs --tail=30 frontend || true
 
-            echo "10. Temizlik: Kullanilmayan eski imajlar siliniyor..."
+            echo "14. Temizlik: Kullanilmayan eski imajlar siliniyor..."
             docker image prune -f
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
