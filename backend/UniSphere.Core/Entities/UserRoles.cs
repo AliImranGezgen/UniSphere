@@ -1,4 +1,4 @@
-namespace UniSphere.Core;
+namespace UniSphere.Core.Entities;
 
 // Sistemdeki kullanıcı rollerinin tek bir noktada tutulduğu statik sınıf
 public static class UserRoles

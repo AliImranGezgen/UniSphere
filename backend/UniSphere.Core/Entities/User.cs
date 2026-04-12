@@ -1,4 +1,4 @@
-namespace UniSphere.Core;
+namespace UniSphere.Core.Entities;
 
 // Sistemdeki kullanıcıyı temsil eden entity
 public class User

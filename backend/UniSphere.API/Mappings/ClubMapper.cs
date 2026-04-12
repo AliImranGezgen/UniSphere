@@ -1,5 +1,5 @@
 using UniSphere.API.DTOs;
-using UniSphere.Core;
+using UniSphere.Core.Entities;
 
 namespace UniSphere.API.Mappings
 {

@@ -31,6 +31,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<TokenService>(); // JWT üretimi vb. işlemler için eklendi
 builder.Services.AddScoped<IClubRepository, ClubRepository>(); // Kulüp veritabanı işlemleri için
 builder.Services.AddScoped<IEventRepository, EventRepository>(); // Etkinlik veritabanı işlemleri için
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // Başvuru veritabanı işlemleri için
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Yorum/Puan veritabanı işlemleri için
 
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();

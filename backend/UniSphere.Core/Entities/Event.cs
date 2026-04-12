@@ -1,4 +1,4 @@
-namespace UniSphere.Core;
+namespace UniSphere.Core.Entities;
 
 // Sistemdeki etkinliklerin entityleri
 public class Event

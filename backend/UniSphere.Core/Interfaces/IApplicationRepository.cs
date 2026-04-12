@@ -1,4 +1,4 @@
-using UniSphere.Core;
+using UniSphere.Core.Entities;
 
 namespace UniSphere.Core.Interfaces
 {
