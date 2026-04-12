@@ -16,8 +16,15 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
 
     // Kullanıcının sistem içindeki rolü (User, Admin vb.)
-    public string Role { get; set; } = "User";
+    public string Role { get; set; } = UserRoles.Student;
 
     // Kullanıcının sisteme kayıt olduğu tarih
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation properties
+    // Kullanıcının etkinliklere yaptığı başvurular
+    public ICollection<Application> Applications { get; set; } = new List<Application>();
+
+    // Kullanıcının etkinliklere bıraktığı yorumlar
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

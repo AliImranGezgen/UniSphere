@@ -1,73 +1,24 @@
-# React + TypeScript + Vite
+# 🎨 UniSphere - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bu klasör, UniSphere projesinin **React ve Vite** kullanılarak geliştirilen kullanıcı arayüzünü içerir.
 
-Currently, two official plugins are available:
+## 📌 Teknolojiler
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React + Vite:** Ultra hızlı geliştirme ortamı.
+- **Tailwind CSS:** Hızlı ve modern stil yönetimi.
+- **React Router DOM:** Sayfa ve yetki (Route Guard) yönlendirmeleri.
+- **State Management:** Auth stateleri ve kullanıcı verisi yönetimi.
 
-## React Compiler
+## 🚀 Geliştirme Ortamında Çalıştırma
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Terminali `frontend` dizininde açın.
+2. Bağımlılıkları (paketleri) yükleyin:
+   ```bash
+   npm install
+   ```
+3. Geliştirici sunucusunu başlatın:
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Sunucu varsayılan olarak `http://localhost:3000` adresinde çalışacaktır. (Not: Backend ile iletişim kurabilmek için `.env` dosyasında `VITE_API_URL` doğru ayarlanmış olmalıdır).

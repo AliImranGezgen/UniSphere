@@ -1,98 +1,96 @@
 using Microsoft.AspNetCore.Mvc;
 using UniSphere.API.DTOs;
-using UniSphere.API.Mappings;
-using UniSphere.Core.Interfaces;
-
-
+using UniSphere.API.Services;
 namespace UniSphere.API.Controllers
 {
-    [ApiController] 
+    [ApiController]
     [Route("api/[controller]")]
     public class EventController : ControllerBase
     {
-        private readonly IEventRepository _repository;
+        private readonly EventService _eventService;
 
-        public EventController(IEventRepository repository)
+        public EventController(EventService eventService)
         {
-            _repository = repository;
+            _eventService = eventService;
         }
 
-        //GÖREV 1 : Tüm etkinlikleri listele
+        // GÖREV 1 : Tüm etkinlikleri listele
         [HttpGet]
         public async Task<IActionResult> GetAllEvents()
         {
-            var entities = await _repository.GetAllEventsAsync();
-            var dtos = entities.Select(x => x.ToDto());
-            return Ok(dtos);
+            var events = await _eventService.GetAllEventsAsync();
+            return Ok(events);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateEventDto dto)
+        public async Task<IActionResult> Create(CreateEventDto dto, int userId)
         {
-            // 1. Gelen DTO'yu veritabanının anlayacağı Entity formatına çevir
-            var eventEntity = dto.ToEntity();
+            try
+            {
+                // 1. İş kurallarını servis katmanında çalıştır
+                var createdEvent = await _eventService.CreateEventAsync(dto, userId);
 
-            // 2. Repository aracılığıyla veritabanına kaydet
-            var createdEvent = await _repository.AddEventAsync(eventEntity);
-
-            // 3. İşlem başarılı olduysa, oluşturulan yeni etkinliği DTO'ya çevirip 200 OK ile geri dön
-            return Ok(createdEvent.ToDto());
+                // 2. İşlem başarılı olduysa, oluşturulan yeni etkinliği geri dön
+                return Ok(createdEvent);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GÖREV 3 : Tek bir etkinliği getir
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var entity = await _repository.GetByEventIdAsync(id);
-            
+            var eventDto = await _eventService.GetByIdAsync(id);
+
             // Eğer veritabanında böyle bir ID yoksa 404 (Bulunamadı) dön
-            if (entity == null) 
+            if (eventDto == null)
                 return NotFound("Aradığınız etkinlik bulunamadı.");
 
-            return Ok(entity.ToDto());
+            return Ok(eventDto);
         }
 
         // GÖREV 4 : Etkinliği Güncelle
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, EventUpdateDto dto)
+        public async Task<IActionResult> Update(int id, EventUpdateDto dto, int userId)
         {
-            // Güvenlik: Adresteki ID ile gönderilen paketteki ID aynı mı?
-            if (id != dto.EventId) 
-                return BadRequest("URL'deki ID ile DTO içindeki ID uyuşmuyor!");
+            try
+            {
+                // Güncelleme işlemini servis katmanına bırakıyoruz
+                var updatedEvent = await _eventService.UpdateEventAsync(id, dto, userId);
 
-            // Veritabanında gerçekten böyle bir etkinlik var mı diye kontrol et
-            var existingEvent = await _repository.GetByEventIdAsync(id);
-            if (existingEvent == null) 
-                return NotFound("Güncellenecek etkinlik bulunamadı.");
+                if (updatedEvent == null)
+                    return NotFound("Güncellenecek etkinlik bulunamadı.");
 
-            // Kilerdeki malzemenin (Entity) üzerine, müşteriden gelen yeni bilgileri (DTO) yazıyoruz
-            existingEvent.Title = dto.Title;
-            existingEvent.Description = dto.Description;
-            existingEvent.EventDate = dto.EventDate;
-            existingEvent.Location = dto.Location;
-            existingEvent.Capacity = dto.Capacity;
-            existingEvent.ClubId = dto.ClubId;
-
-            // Yamağa (Repository) kaydetmesini söylüyoruz
-            await _repository.UpdateEventAsync(existingEvent);
-
-            // Güncellenmiş halini müşteriye geri dönüyoruz
-            return Ok(existingEvent.ToDto());
+                return Ok(updatedEvent);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GÖREV 5 : Etkinliği Sil
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, int userId)
         {
-            // Silmeden önce böyle bir etkinlik var mı diye bakıyoruz
-            var existingEvent = await _repository.GetByEventIdAsync(id);
-            if (existingEvent == null) 
-                return NotFound("Silinecek etkinlik zaten yok.");
+            try
+            {
+                // Silme işlemini ve kuralları servis katmanına bırakıyoruz
+                var deleted = await _eventService.DeleteEventAsync(id, userId);
 
-            await _repository.DeleteAsync(id);
+                if (!deleted)
+                    return NotFound("Silinecek etkinlik zaten yok.");
 
-            // 204 No Content: "İşlem başarıyla yapıldı.".
-            return NoContent(); 
+                // 204 No Content: "İşlem başarıyla yapıldı."
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
