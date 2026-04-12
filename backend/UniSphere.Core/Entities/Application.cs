@@ -1,4 +1,4 @@
-namespace UniSphere.Core
+namespace UniSphere.Core.Entities
 {
     public enum ApplicationStatus //Eventlere başvuru yapan kişilerin durumlarını enum olarak tutar.
     {

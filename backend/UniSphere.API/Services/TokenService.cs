@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using UniSphere.Core;
+using UniSphere.Core.Entities;
 
 namespace UniSphere.API.Services;
 

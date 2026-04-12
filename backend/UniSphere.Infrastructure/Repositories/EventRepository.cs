@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UniSphere.Core;
+using UniSphere.Core.Entities;
 using UniSphere.Core.Interfaces;
 using UniSphere.Infrastructure.Data;
 
@@ -35,10 +36,11 @@ namespace UniSphere.Infrastructure.Repositories
             return eventEntity;
         }
 
-        public async Task UpdateEventAsync(Event eventEntity)
+        public async Task<Event> UpdateEventAsync(Event eventEntity)
         {
             _context.Events.Update(eventEntity);
             await _context.SaveChangesAsync();
+            return eventEntity;
         }
 
         public async Task DeleteAsync(int eventId)

@@ -1,4 +1,4 @@
-using UniSphere.Core;
+using UniSphere.Core.Entities;
 using UniSphere.Core.Interfaces;
 
 namespace UniSphere.API.Services

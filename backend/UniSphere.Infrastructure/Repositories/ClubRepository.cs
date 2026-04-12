@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UniSphere.Core;
+using UniSphere.Core.Entities;
 using UniSphere.Core.Interfaces;
 using UniSphere.Infrastructure.Data;
 

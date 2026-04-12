@@ -1,4 +1,5 @@
 using UniSphere.Core;
+using UniSphere.Core.Entities;
 using UniSphere.Core.Interfaces;
 
 namespace UniSphere.API.Services
@@ -33,13 +34,13 @@ namespace UniSphere.API.Services
             var approvedCount = await _repository.GetApprovedCountAsync(eventId);
 
             if (approvedCount < eventEntity.Capacity)
-                application.Status = "Approved";
+                application.Status = ApplicationStatus.Approved;
             else
-                application.Status = "Waitlisted";
+                application.Status = ApplicationStatus.Waitlisted;
 
             await _repository.AddAsync(application);
 
-            return application.Status;
+            return application.Status.ToString();
         }
     }
 }

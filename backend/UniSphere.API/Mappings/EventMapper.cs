@@ -1,5 +1,5 @@
 using UniSphere.API.DTOs;
-using UniSphere.Core; // Event entity'sinin olduğu yer
+using UniSphere.Core.Entities; // Event entity'sinin olduğu yer
 
 namespace UniSphere.API.Mappings
 {

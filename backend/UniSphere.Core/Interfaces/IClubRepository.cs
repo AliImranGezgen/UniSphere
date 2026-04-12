@@ -1,4 +1,4 @@
-using UniSphere.Core;
+using UniSphere.Core.Entities;
 using System.Threading.Tasks;
 
 namespace UniSphere.Core.Interfaces
