@@ -20,8 +20,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            echo "--- DAGITIM BASLADI ---"
+            set -e
 
+            echo "--- DAGITIM BASLADI ---"
 
             cd ~/UniSphere || exit 1
 
@@ -39,16 +40,22 @@ jobs:
             grep '"@eslint/js"' frontend/package.json || true
             grep '"eslint"' frontend/package.json || true
 
-            echo "5. Sistem yeniden build ediliyor..."
-            docker-compose down
+            echo "5. Frontend yeniden build ediliyor..."
+            docker-compose up -d --build frontend
 
-            docker-compose up -d --build
+            echo "6. Backend yeniden build ediliyor..."
+            docker-compose up -d --build unisphere_api
 
-            echo "6. Konteyner durumlari:"
+            echo "7. Konteyner durumlari:"
             docker ps
 
-            echo "7. Temizlik: Kullanilmayan eski imajlar siliniyor..."
-            docker image prune -f
+            echo "8. Son log kontrolu (API):"
+            docker-compose logs --tail=30 unisphere_api || true
 
+            echo "9. Son log kontrolu (Frontend):"
+            docker-compose logs --tail=30 frontend || true
+
+            echo "10. Temizlik: Kullanilmayan eski imajlar siliniyor..."
+            docker image prune -f
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
