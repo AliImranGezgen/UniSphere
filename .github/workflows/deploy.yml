@@ -1,4 +1,3 @@
-
 name: UniSphere Continuous Deployment (CD)
 
 on:
@@ -53,4 +52,3 @@ jobs:
 
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
-
