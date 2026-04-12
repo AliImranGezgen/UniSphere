@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 // API endpoint'leri için Controller desteğini ekliyoruz (Gelen HTTP isteklerini karşılamak için)
 builder.Services.AddControllers();
 
-
 // CORS Ayarları: Frontend (React) projemizden gelen isteklere izin veriyoruz.
 // Tarayıcı güvenliği (Same-Origin Policy) gereği, farklı kökenlerden gelen istekler varsayılan olarak engellenir.
 builder.Services.AddCors(options =>
@@ -25,6 +24,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Servisler için Dependency Injection (DI) kayıtları
+// AddScoped: Her HTTP isteği için bir kez oluşturulur.
+builder.Services.AddScoped<TokenService>(); // JWT üretimi vb. işlemler için eklendi
+builder.Services.AddScoped<IClubRepository, ClubRepository>(); // Kulüp veritabanı işlemleri için
+builder.Services.AddScoped<IEventRepository, EventRepository>(); // Etkinlik veritabanı işlemleri için
 
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();
@@ -85,7 +89,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-
+// Geliştirme asistanı Swagger'ı uygulamaya dahil ediyoruz
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -98,7 +102,6 @@ app.UseCors("AllowFrontend");
 
 // Kimlik doğrulama işlemini ara katmana (Middleware) ekliyoruz (Kimsiniz?)
 app.UseAuthentication();
-
 // Yetki kontrol işlemlerini ara katmana ekliyoruz (Bu işlemi yapmaya izniniz var mı?)
 app.UseAuthorization();
 
