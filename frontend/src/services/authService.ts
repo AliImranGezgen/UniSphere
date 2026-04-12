@@ -4,7 +4,7 @@ import type { LoginCredentials, RegisterData, AuthResponse } from '../types/auth
 export const authService = {
   // Kullanıcı girişi: Credentials alır, başarılıysa token döner ve localStorage'a kaydeder.
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/Auth/login', credentials);
+    const response = await api.post<AuthResponse>('Auth/login', credentials);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token); // Token'ı sonraki isteklerde kullanmak üzere sakla
     }
@@ -13,7 +13,7 @@ export const authService = {
 
   // Yeni kullanıcı kaydı: Kullanıcı bilgilerini backend'e gönderir.
   register: async (data: RegisterData): Promise<string> => {
-    const response = await api.post<string>('/Auth/register', data);
+    const response = await api.post<string>('Auth/register', data);
     return response.data;
   },
 

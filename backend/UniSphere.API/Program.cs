@@ -20,9 +20,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Vite (Frontend) projesinin varsayılan adresi
-              .AllowAnyHeader()  // Tüm HTTP başlıklarına (Authentication vb.) izin ver
-              .AllowAnyMethod();  // Tüm HTTP metodlarına (GET, POST, PUT, DELETE) izin ver
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -99,6 +99,9 @@ var uploadsPath = Path.Combine(app.Environment.WebRootPath
     ?? app.Environment.ContentRootPath, "uploads");
 Directory.CreateDirectory(uploadsPath);
 
+// CORS politikasını etkinleştiriyoruz — Her şeyden önce gelmeli
+app.UseCors("AllowFrontend");
+
 // Statik dosya servisi: yüklenen afişler /uploads/{filename} üzerinden erişilebilir
 app.UseStaticFiles();
 
@@ -126,8 +129,7 @@ app.UseSwaggerUI(c =>
 
 });
 
-// CORS politikasını etkinleştiriyoruz (Authentication'dan önce gelmelidir)
-app.UseCors("AllowFrontend");
+// CORS politikası yukarıda (UseStaticFiles'tan önce) eklendi
 
 // Kimlik doğrulama işlemini ara katmana (Middleware) ekliyoruz (Kimsiniz?)
 app.UseAuthentication();
@@ -144,4 +146,4 @@ app.MapGet("/", () => "UniSphere API Çalışıyor!"); // Herkese açık endpoin
 app.MapGet("/secure", () => "Bu endpoint JWT ile korunuyor!")
    .RequireAuthorization(); // Yalnızca giriş yapmış (yetkilendirilmiş) kullanıcılar erişebilir
 
-app.Run("http://0.0.0.0:8080");
+app.Run();
