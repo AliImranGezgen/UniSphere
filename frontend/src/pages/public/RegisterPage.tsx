@@ -22,7 +22,7 @@ export default function RegisterPage() {
       alert('Kayıt başarıyla oluşturuldu. Şimdi giriş yapabilirsiniz.');
       // Kayıttan sonra giriş sayfasına yönlendir
       navigate('/login');
-    } catch (err: any) {
+    } catch (err) {
       // Hata durumunda (örn: e-posta zaten kayıtlı) mesajı göster
       if (axios.isAxiosError(err) && err.response) {
         setError(err.response.data || 'Kayıt işlemi başarısız oldu.');
