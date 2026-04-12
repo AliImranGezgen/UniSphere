@@ -3,6 +3,7 @@ using UniSphere.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using UniSphere.API.Services;
+using UniSphere.API.Middlewares; // ExceptionMiddleware için eklendi
 using System.Text;
 using UniSphere.Core.Interfaces;
 using UniSphere.Infrastructure.Repositories;
@@ -92,6 +93,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 var app = builder.Build();
+
+// Global Exception Handler (Tüm hatalar Response dönmeden önce burada yakalanıp formatlanır)
+app.UseMiddleware<ExceptionMiddleware>();
 
 
 // Geliştirme asistanı Swagger'ı uygulamaya dahil ediyoruz
