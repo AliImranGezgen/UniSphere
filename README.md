@@ -40,23 +40,57 @@ unisphere/
 └── README.md             # Ana dokümantasyon
 ```
 
-## 🛠️ Hızlı Kurulum (Docker ile)
+## 🛠️ Kurulum Seçenekleri
+
+### 1. Docker ile Kurulum (Önerilen)
 
 Sistemi tek bir komutla ayağa kaldırmak için bilgisayarınızda Docker'ın kurulu olması yeterlidir.
 
 1.  Projeyi bilgisayarınıza klonlayın.
-2.  Gerekli `.env` dosyalarını oluşturun (Secret keyler ve DB şifreleri için).
+2.  Gerekli `.env` dosyalarını oluşturun.
 3.  Terminalde ana dizindeyken şu komutu çalıştırın:
+    ```bash
+    docker-compose up -d --build
+    ```
+- **Frontend:** `http://localhost:3000`
+- **Backend:** `http://localhost:8085`
 
-```bash
-docker-compose up -d --build
+### 2. Yerel Geliştirme Ortamı (Docker Olmadan)
+
+Docker kullanmadan, projeyi doğrudan kendi makinenizde (Windows/MacOS/Linux) çalıştırmak için aşağıdaki adımları izleyin.
+
+#### Adım 1: Uzak Veritabanı Bağlantısı (SSH Tunnel)
+Veritabanı uzak sunucuda olduğu için bir SSH tüneli açmanız gerekir:
+```powershell
+ssh -L 5432:localhost:5432 root@157.180.82.142
+# Şifre: yenice
 ```
+*Not: Bu terminal penceresini çalışma boyunca açık tutun.*
 
-- **Frontend Arayüzü:** `http://localhost:3000`
-- **Backend API:** `http://localhost:8085`
+#### Adım 2: Backend (API) Başlatma
+1. `backend` dizinine gidin.
+2. HTTP profili ile projeyi çalıştırın:
+   ```powershell
+   dotnet run --launch-profile http
+   ```
+- **API Adresi:** `http://localhost:5182`
+- **Swagger:** `http://localhost:5182/swagger`
+
+#### Adım 3: Frontend (React) Başlatma
+1. `frontend` dizinine gidin.
+2. Bağımlılıkları yükleyin (ilk seferde): `npm install`
+3. Projeyi başlatın:
+   ```powershell
+   # Windows PowerShell yetki sorunu yaşayanlar için:
+   npm.cmd run dev
+   ```
+- **Frontend Adresi:** `http://localhost:5173` (veya 5174)
+
+---
 
 ## 👨‍💻 Geliştirici Ekibi
 
 - **Frontend & DevOps:** Ali, Emir
 - **Backend:** Yusuf, Kadir
 - **Dokümantasyon & Frontend:** Ömer
+
