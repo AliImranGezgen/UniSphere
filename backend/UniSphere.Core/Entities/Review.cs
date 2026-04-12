@@ -1,0 +1,18 @@
+namespace UniSphere.Core.Entities
+{
+    public class Review // evente yapılan yorumları tutan entity
+    {
+        public int Id { get; set; } // yapılan yorumun IDsini tutar
+        public int UserId { get; set; } // yorum yapan userin IDisini tutar
+        public int EventId { get; set; } // yorum yapılan eventin IDsini tutar
+        public int Rating { get; set; } // Evente verilen puanı belirler
+        public string Comment { get; set; } = string.Empty; // evente yapılan yorumu tutar.
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // yorum yapılan saati tutar.
+
+        // Navigation properties
+        // Yorumu yapan kullanıcı bilgisi
+        public User User { get; set; } = null!;
+        // Yorum yapılan etkinlik bilgisi
+        public Event Event { get; set; } = null!;
+    }
+}
