@@ -20,17 +20,21 @@ public class RecommendationService : IRecommendationService
     {
         var results = new List<RecommendationResultDto>();
 
+        // Tüm etkinlikleri veritabanından alıyoruz.
         var events = _context.Events.ToList();
 
+        // Kullanıcının geçmişteki başvurularını çekiyoruz.
         var userApplications = _context.Applications
             .Where(x => x.UserId == request.UserId)
             .ToList();
 
+        // Onaylanmış katılım event Id'lerini önceden belirliyoruz.
         var attendedEvents = userApplications
             .Where(x => x.Status == ApplicationStatus.Approved)
             .Select(x => x.EventId)
             .ToList();
 
+        // En çok katıldıkları kategoriye göre kişiselleştirme için istatistik çıkarıyoruz.
         var userCategoryStats = _context.Applications
             .Where(x => x.UserId == request.UserId && x.Status == ApplicationStatus.Approved)
             .GroupBy(x => x.Event.Category)
@@ -48,11 +52,13 @@ public class RecommendationService : IRecommendationService
         {
             if (userApplications.Any(x => x.EventId == ev.Id))
             {
+                // Kullanıcının daha önce başvurduğu etkinlikleri önerme.
                 continue;
             }
 
             if (ev.EventDate < DateTime.UtcNow)
             {
+                // Geçmiş etkinlikleri öneriden çıkar.
                 continue;
             }
 
@@ -77,6 +83,7 @@ public class RecommendationService : IRecommendationService
                 reason += "İlgi alanına uygun etkinlikler öneriliyor. ";
             }
 
+            // Etkinlik popülerliğine göre hafif bir puan artışı ekliyoruz.
             var popularity = _context.Applications.Count(x => x.EventId == ev.Id);
             score += popularity * 0.01;
             if (popularity > 0)
@@ -86,6 +93,7 @@ public class RecommendationService : IRecommendationService
 
             score += 0.1;
 
+            // No-show riskini tahmin edip öneri skorunu buna göre ayarlıyoruz.
             var risk = _noShowPredictionService.Predict(new NoShowRequestDto
             {
                 UserId = request.UserId,
@@ -108,6 +116,7 @@ public class RecommendationService : IRecommendationService
                 reason += "Katılmama riski düşük. ";
             }
 
+            // Skorları 0-1 aralığında normalize ediyoruz.
             score = Math.Max(score, 0);
             score = Math.Min(score, 1.0);
 
