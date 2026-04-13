@@ -6,7 +6,9 @@ using UniSphere.API.Services;
 using UniSphere.API.Middlewares; // ExceptionMiddleware için eklendi
 using System.Text;
 using UniSphere.Core.Interfaces;
+using UniSphere.Core.AI.Interfaces;
 using UniSphere.Infrastructure.Repositories;
+using UniSphere.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,8 @@ builder.Services.AddScoped<IClubRepository, ClubRepository>(); // Kulüp veritab
 builder.Services.AddScoped<IEventRepository, EventRepository>(); // Etkinlik veritabanı işlemleri için
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // Başvuru veritabanı işlemleri için
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Yorum/Puan veritabanı işlemleri için
+builder.Services.AddScoped<IRecommendationService, RecommendationService>(); // Öneri sistemi için DI kaydı
+builder.Services.AddScoped<INoShowPredictionService, NoShowPredictionService>(); // No-show tahmin servisi için DI kaydı
 
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();
