@@ -20,6 +20,7 @@ public class AITestController : ControllerBase
     [HttpGet("recommend")]
     public IActionResult GetRecommendations()
     {
+        // Örnek bir request ile recommendation servisini test ediyoruz.
         var result = _recommendationService.GetRecommendations(new RecommendationRequestDto
         {
             UserId = 1,
@@ -34,6 +35,7 @@ public class AITestController : ControllerBase
     [HttpGet("noshow")]
     public IActionResult GetNoShowPrediction()
     {
+        // Örnek bir request ile no-show tahmin servisini test ediyoruz.
         var result = _noShowPredictionService.Predict(new NoShowRequestDto
         {
             UserId = 1,

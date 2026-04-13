@@ -16,6 +16,7 @@ public class NoShowPredictionService : INoShowPredictionService
 
     public NoShowResultDto Predict(NoShowRequestDto request)
     {
+        // Kullanıcının geçmiş başvurularını çekiyoruz.
         var userApps = _context.Applications
             .Where(x => x.UserId == request.UserId)
             .ToList();
@@ -24,6 +25,7 @@ public class NoShowPredictionService : INoShowPredictionService
         var attended = userApps.Count(x => x.Status == ApplicationStatus.Approved) + request.PreviousAttendCount;
         var noShow = total - attended;
 
+        // No-show oranını hesaplıyoruz.
         double ratio = total == 0 ? 0 : (double)noShow / total;
         string riskLevel;
 
