@@ -26,6 +26,9 @@ public class Event
     // Hangi kulübe ait olduğu
     public int ClubId { get; set; }
 
+    // Etkinlik kategorisi
+    public string Category { get; set; } = string.Empty;
+
     // Kulüp ilişkisi (Navigation Property)
     public Club Club { get; set; } = null!;
 
