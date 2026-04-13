@@ -8,12 +8,10 @@ namespace UniSphere.Infrastructure.Services;
 public class RecommendationService : IRecommendationService
 {
     private readonly AppDbContext _context;
-    private readonly INoShowPredictionService _noShowPredictionService;
 
-    public RecommendationService(AppDbContext context, INoShowPredictionService noShowPredictionService)
+    public RecommendationService(AppDbContext context)
     {
         _context = context;
-        _noShowPredictionService = noShowPredictionService;
     }
 
     public List<RecommendationResultDto> GetRecommendations(RecommendationRequestDto request)
@@ -23,120 +21,145 @@ public class RecommendationService : IRecommendationService
         // Tüm etkinlikleri veritabanından alıyoruz.
         var events = _context.Events.ToList();
 
-        // Kullanıcının geçmişteki başvurularını çekiyoruz.
+        // 1. Application Geçmişi
         var userApplications = _context.Applications
             .Where(x => x.UserId == request.UserId)
             .ToList();
 
-        // Onaylanmış katılım event Id'lerini önceden belirliyoruz.
-        var attendedEvents = userApplications
-            .Where(x => x.Status == ApplicationStatus.Approved)
+        var appliedEventIds = userApplications.Select(x => x.EventId).ToHashSet();
+
+        // 2. Check-in Geçmişi
+        var checkedInEventIds = userApplications
+            .Where(x => x.Status == ApplicationStatus.CheckedIn)
+            .Select(x => x.EventId)
+            .ToHashSet();
+
+        // 3. Review Geçmişi
+        var userReviews = _context.Reviews
+            .Where(x => x.UserId == request.UserId)
+            .ToList();
+
+        // Profil çıkarmak için geçmiş etkinlikleri alıyoruz
+        var attendedOrApprovedEventIds = userApplications
+            .Where(x => x.Status == ApplicationStatus.Approved || x.Status == ApplicationStatus.CheckedIn)
             .Select(x => x.EventId)
             .ToList();
 
-        // En çok katıldıkları kategoriye göre kişiselleştirme için istatistik çıkarıyoruz.
-        var userCategoryStats = _context.Applications
-            .Where(x => x.UserId == request.UserId && x.Status == ApplicationStatus.Approved)
-            .GroupBy(x => x.Event.Category)
-            .Select(g => new
-            {
-                Category = g.Key,
-                Count = g.Count()
-            })
-            .OrderByDescending(x => x.Count)
+        var historyEvents = _context.Events
+            .Where(e => attendedOrApprovedEventIds.Contains(e.Id))
             .ToList();
 
-        var topCategory = userCategoryStats.FirstOrDefault()?.Category;
+        var topCategories = historyEvents
+            .GroupBy(e => e.Category)
+            .OrderByDescending(g => g.Count())
+            .Select(g => g.Key)
+            .ToList();
+
+        var topClubs = historyEvents
+            .GroupBy(e => e.ClubId)
+            .OrderByDescending(g => g.Count())
+            .Select(g => g.Key)
+            .ToList();
 
         foreach (var ev in events)
         {
-            if (userApplications.Any(x => x.EventId == ev.Id))
-            {
-                // Kullanıcının daha önce başvurduğu etkinlikleri önerme.
-                continue;
-            }
-
-            if (ev.EventDate < DateTime.UtcNow)
-            {
-                // Geçmiş etkinlikleri öneriden çıkar.
-                continue;
-            }
-
+            // Kullanıcının daha önce başvurduğu etkinlikleri önerme. İleri tarihli olmayanları önerme.
+            if (ev.EventDate < DateTime.UtcNow) continue;
+            if (appliedEventIds.Contains(ev.Id)) continue;
+            
             double score = 0;
-            string reason = string.Empty;
+            var reasons = new List<string>();
 
-            if (!string.IsNullOrEmpty(topCategory) && ev.Category == topCategory)
+            // --- SKORLAMA MANTIĞI (Kural Tabanlı Hibrit Ön Hazırlık) ---
+
+            // Kural 1: Kategori / Kulüp (Application Geşmişi Etkisi)
+            if (topCategories.Contains(ev.Category))
             {
-                score += 0.3;
-                reason += "En çok katıldığın kategoriye ait. ";
+                var categoryRank = topCategories.IndexOf(ev.Category);
+                if (categoryRank == 0)
+                {
+                    score += 0.3;
+                    reasons.Add("En çok katıldığınız kategori.");
+                }
+                else
+                {
+                    score += 0.15;
+                    reasons.Add("İlgi alanınıza uygun.");
+                }
             }
 
-            if (attendedEvents.Contains(ev.Id))
+            // Kural 2: Kulüp & Check-in Geçmişi
+            if (topClubs.Contains(ev.ClubId))
             {
-                score += 0.3;
-                reason += "Katıldığın etkinliklerle ilişkili. ";
+                var checkInsForThisClub = historyEvents.Count(he => he.ClubId == ev.ClubId && checkedInEventIds.Contains(he.Id));
+                if (checkInsForThisClub > 0)
+                {
+                    score += 0.35; // Check-in yapmış olması skoru yükseltir
+                    reasons.Add("Etkinliklerine düzenli katıldığınız bir kulüp.");
+                }
+                else
+                {
+                    score += 0.2;
+                    reasons.Add("Takip ettiğiniz kulübün etkinliği.");
+                }
             }
 
-            if (request.InterestedCategories.Any())
+            // Kural 3: Review Geçmişi
+            var reviewsForThisCategory = userReviews
+                .Where(r => historyEvents.Any(he => he.Id == r.EventId && he.Category == ev.Category))
+                .ToList();
+
+            if (reviewsForThisCategory.Any())
+            {
+                var avgRating = reviewsForThisCategory.Average(r => r.Rating);
+                if (avgRating >= 4.0)
+                {
+                    score += 0.2;
+                    reasons.Add("Bu tür etkinliklere daha önce yüksek puan verdiniz.");
+                }
+                else if (avgRating <= 2.0)
+                {
+                    // Düşük puanlı kategorilerden kaçınma cezası
+                    score -= 0.3;
+                    reasons.Add("Daha önce bu kategoride düşük puan verdiğiniz için öncelik düşürüldü.");
+                }
+            }
+
+            // İlgi alanları (Request üzerinden geldiyse)
+            if (request.InterestedCategories.Contains(ev.Category))
             {
                 score += 0.2;
-                reason += "İlgi alanına uygun etkinlikler öneriliyor. ";
+                reasons.Add("Profilinizdeki ilgi alanlarıyla eşleşiyor.");
             }
 
-            // Etkinlik popülerliğine göre hafif bir puan artışı ekliyoruz.
-            var popularity = _context.Applications.Count(x => x.EventId == ev.Id);
-            score += popularity * 0.01;
-            if (popularity > 0)
-            {
-                reason += "Popülerlik artışı sağlandı. ";
-            }
-
-            score += 0.1;
-
-            // No-show riskini tahmin edip öneri skorunu buna göre ayarlıyoruz.
-            var risk = _noShowPredictionService.Predict(new NoShowRequestDto
-            {
-                UserId = request.UserId,
-                EventId = ev.Id
-            });
-
-            if (risk.RiskLevel == "High")
-            {
-                score -= 0.5;
-                reason += "Katılmama ihtimali yüksek. ";
-            }
-            else if (risk.RiskLevel == "Medium")
-            {
-                score -= 0.2;
-                reason += "Katılım riski orta. ";
-            }
-            else
-            {
-                score += 0.1;
-                reason += "Katılmama riski düşük. ";
-            }
-
-            // Skorları 0-1 aralığında normalize ediyoruz.
+            // Normalizasyon (0 ile 1 arasına sabitleme)
             score = Math.Max(score, 0);
             score = Math.Min(score, 1.0);
 
-            reason = string.IsNullOrWhiteSpace(reason)
-                ? "Senin için önerildi."
-                : reason.Trim();
-
-            results.Add(new RecommendationResultDto
+            // Sadece skoru olan etkinlikleri dahil edelim
+            if (score > 0)
             {
-                EventId = ev.Id,
-                Score = Math.Round(score, 2),
-                Reason = reason,
-                RiskLevel = risk.RiskLevel,
-                Meta = new AIResponseMetaDto
+                var explainability = string.Join(" ", reasons);
+                if (string.IsNullOrWhiteSpace(explainability))
                 {
-                    Model = "recommendation-v1"
+                    explainability = "Sizin için öneriliyor.";
                 }
-            });
+
+                results.Add(new RecommendationResultDto
+                {
+                    EventId = ev.Id,
+                    Score = Math.Round(score, 2),
+                    Reason = explainability, // Explainability eklendi
+                    RiskLevel = "N/A", // Risk tahminini modül dışında tuttuk
+                    Meta = new AIResponseMetaDto
+                    {
+                        Model = "recommendation-hybrid-v2"
+                    }
+                });
+            }
         }
 
+        // Skorlara göre sırala ve ilk 5'i döndür
         return results
             .OrderByDescending(x => x.Score)
             .Take(5)

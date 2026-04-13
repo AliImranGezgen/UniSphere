@@ -34,7 +34,7 @@ namespace UniSphere.Tests.Services
         public async Task CreateEventAsync_ShouldThrowException_WhenCapacityIsNegative()
         {
             // Arrange
-            var dto = new CreateEventDto { Capacity = -1, EventDate = DateTime.UtcNow.AddDays(1) };
+            var dto = new CreateEventDto { Capacity = -1, EventDate = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-ddTHH:mm:ssZ") };
 
             // Act
             Func<Task> act = async () => await _service.CreateEventAsync(dto, 1);
@@ -48,7 +48,7 @@ namespace UniSphere.Tests.Services
         public async Task UpdateEventAsync_ShouldThrowException_WhenCapacityIsNegative()
         {
             // Arrange
-            var dto = new EventUpdateDto { EventId = 1, Capacity = -1, EventDate = DateTime.UtcNow.AddDays(1) };
+            var dto = new EventUpdateDto { EventId = 1, Capacity = -1, EventDate = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-ddTHH:mm:ssZ") };
 
             // Act
             Func<Task> act = async () => await _service.UpdateEventAsync(1, dto, 1);
@@ -62,7 +62,7 @@ namespace UniSphere.Tests.Services
         public async Task UpdateEventAsync_ShouldThrowException_WhenUserIsNotClubManager()
         {
             // Arrange
-            var dto = new EventUpdateDto { EventId = 1, ClubId = 10, Capacity = 50, EventDate = DateTime.UtcNow.AddDays(1) };
+            var dto = new EventUpdateDto { EventId = 1, ClubId = 10, Capacity = 50, EventDate = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-ddTHH:mm:ssZ") };
             
             _mockClubRepo.Setup(r => r.GetByIdAsync(10))
                 .ReturnsAsync(new Club { Id = 10, ManagerId = 99 }); // Manager is 99
