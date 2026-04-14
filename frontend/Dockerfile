@@ -1,3 +1,4 @@
+# UniSphere notu: Frontend imaji build ve yayin adimlarini tek yerde tarif eder.
 # 1. Aşama: Build (İnşa)
 FROM node:20-alpine AS build
 WORKDIR /app

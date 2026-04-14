@@ -1,3 +1,4 @@
+// UniSphere notu: Event History Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { Link } from 'react-router-dom';
 import { formatDateTime, mockApplications, statusClass } from '../pageData';
 

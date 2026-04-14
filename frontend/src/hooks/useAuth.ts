@@ -1,3 +1,4 @@
+// UniSphere notu: Use Auth hook'u ortak kullanilan durum ve yetki kontrolunu sadelestirir.
 import { useState } from 'react';
 import type { User } from '../types/auth';
 

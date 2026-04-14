@@ -1,3 +1,4 @@
+/* UniSphere notu: Auth Layout ortak sayfa iskeletini ve navigasyon duzenini kurar. */
 .auth-page-container {
   display: flex;
   flex-direction: column;

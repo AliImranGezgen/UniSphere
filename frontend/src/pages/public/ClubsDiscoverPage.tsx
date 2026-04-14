@@ -1,3 +1,4 @@
+// UniSphere notu: Clubs Discover Page oturum acmadan erisilen sayfa akisini tasir.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';

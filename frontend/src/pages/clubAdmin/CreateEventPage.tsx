@@ -1,3 +1,4 @@
+// UniSphere notu: Create Event Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useState } from 'react';
 import { createEventForm } from '../../services/eventService';
 

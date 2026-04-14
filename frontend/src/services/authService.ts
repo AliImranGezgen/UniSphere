@@ -1,3 +1,4 @@
+// UniSphere notu: Auth Service API cagrilarini tek noktadan yonetmek icin ayrildi.
 import { api } from './api';
 import type { LoginCredentials, RegisterData, AuthResponse, User } from '../types/auth';
 

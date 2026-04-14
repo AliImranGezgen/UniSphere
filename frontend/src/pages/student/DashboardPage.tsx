@@ -1,3 +1,4 @@
+// UniSphere notu: Dashboard Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import { Link } from 'react-router-dom';

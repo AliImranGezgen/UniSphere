@@ -1,3 +1,4 @@
+// UniSphere notu: Moderation Page sistem yoneticisi tarafindaki kontrol ekranini temsil eder.
 import { useState } from 'react';
 import { statusClass } from '../pageData';
 

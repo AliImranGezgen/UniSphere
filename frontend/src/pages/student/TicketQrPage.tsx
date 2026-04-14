@@ -1,3 +1,4 @@
+// UniSphere notu: Ticket Qr Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { Link, useParams } from 'react-router-dom';
 
 export default function TicketQrPage() {

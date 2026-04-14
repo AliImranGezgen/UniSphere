@@ -1,3 +1,4 @@
+// UniSphere notu: Club Service API cagrilarini tek noktadan yonetmek icin ayrildi.
 import { api } from './api';
 import type { Club } from '../types/club';
 

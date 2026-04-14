@@ -1,3 +1,4 @@
+// UniSphere notu: Api API cagrilarini tek noktadan yonetmek icin ayrildi.
 import axios from 'axios';
 import { API_URL } from '../utils/constants';
 

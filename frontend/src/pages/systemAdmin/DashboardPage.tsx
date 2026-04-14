@@ -1,3 +1,4 @@
+// UniSphere notu: Dashboard Page sistem yoneticisi tarafindaki kontrol ekranini temsil eder.
 import { useEffect, useState } from 'react';
 import { getClubs } from '../../services/clubService';
 import { getEvents } from '../../services/eventService';

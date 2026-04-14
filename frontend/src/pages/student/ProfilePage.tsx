@@ -1,3 +1,4 @@
+// UniSphere notu: Profile Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { useEffect, useState } from 'react';
 import { authService } from '../../services/authService';
 import type { User } from '../../types/auth';

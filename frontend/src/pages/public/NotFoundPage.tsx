@@ -1,3 +1,4 @@
+// UniSphere notu: Not Found Page oturum acmadan erisilen sayfa akisini tasir.
 import { Link } from 'react-router-dom';
 
 export default function NotFoundPage() {

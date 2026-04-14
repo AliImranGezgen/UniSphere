@@ -1,3 +1,4 @@
+// UniSphere notu: Event Card etkinlik akisi icindeki tekrar eden parcayi toparlar.
 
 import type { Event } from '../../types/event';
 

@@ -1,3 +1,4 @@
+// UniSphere notu: Register Page oturum acmadan erisilen sayfa akisini tasir.
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';

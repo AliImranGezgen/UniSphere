@@ -1,3 +1,4 @@
+// UniSphere notu: Event Form farkli ekranlarda tekrar kullanilan arayuz parcasidir.
 import React, { useState } from 'react';
 
 // Bekçinin istediği "Kimlik Kartı" (Type Definition)

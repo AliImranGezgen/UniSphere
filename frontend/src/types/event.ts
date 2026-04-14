@@ -1,3 +1,4 @@
+// UniSphere notu: Event ile ilgili frontend tipleri backend sozlesmesiyle uyumlu tutulur.
 export interface Event {
   eventId: number;
   title: string;

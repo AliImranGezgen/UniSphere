@@ -1,3 +1,4 @@
+// UniSphere notu: Recommended Events Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { aiService, type RecommendationResult } from '../../services/aiService';

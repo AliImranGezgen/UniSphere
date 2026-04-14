@@ -1,3 +1,4 @@
+// UniSphere notu: Sidebar birden fazla sayfada tekrar eden arayuz ihtiyacini karsilar.
 import { NavLink, useLocation } from 'react-router-dom';
 
 type MenuItem = {

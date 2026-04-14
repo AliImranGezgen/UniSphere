@@ -1,3 +1,4 @@
+// UniSphere notu: Participants Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { mockApplications, statusClass } from '../pageData';
 
 export default function ParticipantsPage() {

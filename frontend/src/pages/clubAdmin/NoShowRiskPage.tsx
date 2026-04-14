@@ -1,3 +1,4 @@
+// UniSphere notu: No Show Risk Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useEffect, useState } from 'react';
 import { aiService, type NoShowResult } from '../../services/aiService';
 import { statusClass } from '../pageData';

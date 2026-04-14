@@ -1,3 +1,4 @@
+// UniSphere notu: Users Page sistem yoneticisi tarafindaki kontrol ekranini temsil eder.
 import { mockUsers, statusClass } from '../pageData';
 
 export default function UsersPage() {

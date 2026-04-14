@@ -1,3 +1,4 @@
+// UniSphere notu: Auth Layout ortak sayfa iskeletini ve navigasyon duzenini kurar.
 
 import { Outlet } from 'react-router-dom';
 import illustration from '../assets/auth-illustration13.png';

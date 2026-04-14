@@ -1,3 +1,4 @@
+// UniSphere notu: İndex uygulama rotalarini ve yetkili gecisleri bir araya getirir.
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import AuthLayout from '../../layouts/AuthLayout';

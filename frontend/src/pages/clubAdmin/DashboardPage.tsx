@@ -1,3 +1,4 @@
+// UniSphere notu: Dashboard Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getEvents } from '../../services/eventService';
