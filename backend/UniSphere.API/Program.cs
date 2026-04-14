@@ -38,6 +38,7 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // 
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Yorum/Puan veritabanı işlemleri için
 builder.Services.AddScoped<IRecommendationService, RecommendationService>(); // Öneri sistemi için DI kaydı
 builder.Services.AddScoped<INoShowPredictionService, NoShowPredictionService>(); // No-show tahmin servisi için DI kaydı
+builder.Services.AddScoped<IEventDescriptionImprovementService, EventDescriptionImprovementService>(); // AI metin düzeltici
 
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();

@@ -13,6 +13,12 @@ export type NoShowResult = {
   reasons: string[];
 };
 
+export type ImproveDescriptionResult = {
+  originalText: string;
+  improvedText: string;
+  explanations: string[];
+};
+
 export const aiService = {
   getRecommendations: async (): Promise<RecommendationResult[]> => {
     const response = await api.get<RecommendationResult[]>('ai/recommend');
@@ -23,4 +29,9 @@ export const aiService = {
     const response = await api.get<NoShowResult>('ai/noshow');
     return response.data;
   },
+
+  improveDescription: async (text: string): Promise<ImproveDescriptionResult> => {
+    const response = await api.post<ImproveDescriptionResult>('ai/improve-description', { textToImprove: text });
+    return response.data;
+  }
 };
