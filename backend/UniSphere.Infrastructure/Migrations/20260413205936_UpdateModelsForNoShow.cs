@@ -16,6 +16,18 @@ namespace UniSphere.Infrastructure.Migrations
                 type: "text",
                 nullable: false,
                 defaultValue: "");
+                migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns 
+                        WHERE table_name='Events' AND column_name='Category'
+                    ) THEN
+                        ALTER TABLE ""Events"" ADD COLUMN ""Category"" text NOT NULL DEFAULT '';
+                    END IF;
+                END
+                $$;
+            ");
         }
 
         /// <inheritdoc />
