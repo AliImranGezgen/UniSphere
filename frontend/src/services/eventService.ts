@@ -16,6 +16,20 @@ export const createEvent = async (data: Partial<Event>) => {
   return response.data;
 };
 
+export const createEventForm = async (data: FormData): Promise<Event> => {
+  const response = await api.post<Event>('event', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
+export const updateEventForm = async (id: number, data: FormData): Promise<Event> => {
+  const response = await api.put<Event>(`event/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
 export const deleteEvent = async (id: number) => {
   await api.delete('event/' + id);
 };

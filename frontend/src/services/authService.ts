@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { LoginCredentials, RegisterData, AuthResponse } from '../types/auth';
+import type { LoginCredentials, RegisterData, AuthResponse, User } from '../types/auth';
 
 export const authService = {
   // Kullanıcı girişi: Credentials alır, başarılıysa token döner ve localStorage'a kaydeder.
@@ -27,9 +27,13 @@ export const authService = {
     return localStorage.getItem('token');
   },
 
+  getProfile: async (): Promise<User & { createdAt: string }> => {
+    const response = await api.get<User & { createdAt: string }>('Auth/profile');
+    return response.data;
+  },
+
   // Kullanıcının oturum açıp açmadığını kontrol eder.
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   }
 };
-

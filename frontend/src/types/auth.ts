@@ -1,7 +1,7 @@
 export interface User { 
   id: string; 
   email: string; 
-  role: 'student' | 'club_admin' | 'system_admin'; 
+  role: 'student' | 'club_admin' | 'system_admin' | 'Student' | 'ClubAdmin' | 'SystemAdmin'; 
   name: string; 
 }
 
@@ -19,4 +19,3 @@ export interface RegisterData {
   email: string;
   password: string;
 }
-
