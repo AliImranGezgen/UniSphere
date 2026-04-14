@@ -36,7 +36,7 @@ function clubColor(name: string) {
 }
 
 // Kontenjan doluluk oranı
-function capacityPercent(capacity: number) {
+function capacityPercent(_capacity: number) {
   // Gerçek uygulamada katılan sayısı da olurdu, şimdilik sabit gösterim
   return Math.min(100, Math.floor(Math.random() * 60) + 20);
 }

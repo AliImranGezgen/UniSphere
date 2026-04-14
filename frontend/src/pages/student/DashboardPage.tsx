@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import { Link } from 'react-router-dom';
 
@@ -40,7 +40,7 @@ const mockRecommendations = [
 ];
 
 export default function DashboardPage() {
-  const [recommendations, setRecommendations] = useState(mockRecommendations);
+  const [recommendations] = useState(mockRecommendations);
 
   // Normalde burada useEffect yapıp backend'in recommendation endpoint'i çağırılır:
   // getRecommendations().then(setRecommendations);

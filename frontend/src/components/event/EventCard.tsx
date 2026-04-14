@@ -6,7 +6,7 @@ export default function EventCard({ event }: { event: Event }) {
     <div style={{ border: '1px solid #ccc', padding: 15, borderRadius: 5, marginBottom: 10 }}>
       <h3>{event.title}</h3>
       <p>{event.description}</p>
-      <small>{event.location} - {event.date}</small>
+      <small>{event.location} - {new Date(event.eventDate).toLocaleString('tr-TR')}</small>
     </div>
   );
 }

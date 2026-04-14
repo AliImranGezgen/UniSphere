@@ -42,6 +42,7 @@ export default function Navbar() {
           <Link to="/" style={navLinkStyle('/')} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={(e) => e.currentTarget.style.color = location.pathname === '/' ? 'var(--primary)' : 'var(--text-muted)'}>Ana Sayfa</Link>
           <Link to="/events" style={navLinkStyle('/events')} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={(e) => e.currentTarget.style.color = location.pathname === '/events' ? 'var(--primary)' : 'var(--text-muted)'}>Etkinlikler</Link>
           <Link to="/clubs" style={navLinkStyle('/clubs')} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={(e) => e.currentTarget.style.color = location.pathname === '/clubs' ? 'var(--primary)' : 'var(--text-muted)'}>Kulüpler</Link>
+          <Link to="/demo" className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem', borderColor: location.pathname === '/demo' ? 'var(--primary)' : 'var(--border-color)', color: location.pathname === '/demo' ? 'var(--primary)' : 'var(--text-main)' }}>Sunum</Link>
           
           <div style={{ display: 'flex', gap: '1rem', marginLeft: '1rem', paddingLeft: '1rem', borderLeft: '1px solid var(--border-color)' }}>
             <Link to="/login" className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Giriş Yap</Link>

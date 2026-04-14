@@ -6,15 +6,6 @@ import { getEvents } from '../../services/eventService';
 import type { Club } from '../../types/club';
 import type { Event } from '../../types/event';
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
 function getClubAvatar(name: string) {
   const parts = name.split(' ').filter(Boolean);
   if (parts.length === 1) return name.slice(0, 2).toUpperCase();
