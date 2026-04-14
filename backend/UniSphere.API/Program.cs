@@ -94,7 +94,14 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 // Entity Framework Core için PostgreSQL (Npgsql) veritabanı bağlantı ayarını yapıyoruz
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, sqlOptions => 
+    {
+        // Geçici ağ hataları veya veritabanı başlatılma süreçlerinde bağlantıyı yeniden denemek için:
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null);
+    }));
 
 var app = builder.Build();
 
@@ -115,7 +122,32 @@ app.UseStaticFiles();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var maxRetryCount = 5;
+    var retryDelay = TimeSpan.FromSeconds(5);
+    var retries = 0;
+    
+    while(retries < maxRetryCount)
+    {
+        try
+        {
+            logger.LogInformation("Veritabanı bekleyen migrationlar kontrol ediliyor... (Deneme {RetryCount}/{MaxRetryCount})", retries + 1, maxRetryCount);
+            db.Database.Migrate();
+            logger.LogInformation("Veritabanı migration'ları başarıyla uygulandı veya güncel durumda.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            retries++;
+            logger.LogWarning(ex, "Veritabanına bağlanılamadı. {Delay} saniye sonra tekrar denenecek...", retryDelay.TotalSeconds);
+            if (retries == maxRetryCount)
+            {
+                logger.LogError(ex, "Veritabanı bağlantısı kritik hata ile sonuçlandı. Maksimum deneme sayısına ulaşıldı. Lütfen veritabanı kimlik bilgilerini (.env veya appsettings.json) kontrol ediniz.");
+                throw; 
+            }
+            Thread.Sleep(retryDelay);
+        }
+    }
 }
 
 // Global Exception Handler (Tüm hatalar Response dönmeden önce burada yakalanıp formatlanır)
