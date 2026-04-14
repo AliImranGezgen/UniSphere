@@ -82,7 +82,7 @@ ssh -L 5432:localhost:5432 root@157.180.82.142
 3. Projeyi başlatın:
    ```powershell
    # Windows PowerShell yetki sorunu yaşayanlar için:
-   npm.cmd run dev
+   npm run dev
    ```
 - **Frontend Adresi:** `http://localhost:5173` (veya 5174)
 
