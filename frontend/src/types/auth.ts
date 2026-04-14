@@ -1,3 +1,4 @@
+// UniSphere notu: Auth ile ilgili frontend tipleri backend sozlesmesiyle uyumlu tutulur.
 export interface User { 
   id: string; 
   email: string; 

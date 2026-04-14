@@ -1,3 +1,4 @@
+// UniSphere notu: My Applications Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { Link } from 'react-router-dom';
 import { formatDateTime, mockApplications, statusClass } from '../pageData';
 

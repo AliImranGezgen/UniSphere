@@ -1,3 +1,4 @@
+// UniSphere notu: Qr Scanner Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useState } from 'react';
 
 export default function QrScannerPage() {

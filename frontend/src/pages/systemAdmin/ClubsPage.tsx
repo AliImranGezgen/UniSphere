@@ -1,3 +1,4 @@
+// UniSphere notu: Clubs Page sistem yoneticisi tarafindaki kontrol ekranini temsil eder.
 import { useEffect, useState } from 'react';
 import { getClubs } from '../../services/clubService';
 import type { Club } from '../../types/club';

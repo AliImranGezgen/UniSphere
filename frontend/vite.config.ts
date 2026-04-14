@@ -1,3 +1,4 @@
+// UniSphere notu: Vite ayarlari frontend gelistirme ve build surecini toplar.
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 

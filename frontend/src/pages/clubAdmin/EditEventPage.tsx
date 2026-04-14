@@ -1,3 +1,4 @@
+// UniSphere notu: Edit Event Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getEventById, updateEventForm } from '../../services/eventService';

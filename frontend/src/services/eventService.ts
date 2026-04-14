@@ -1,3 +1,4 @@
+// UniSphere notu: Event Service API cagrilarini tek noktadan yonetmek icin ayrildi.
 import { api } from './api';
 import type { Event } from '../types/event';
 

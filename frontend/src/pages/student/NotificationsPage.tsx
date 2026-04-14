@@ -1,3 +1,4 @@
+// UniSphere notu: Notifications Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { formatDateTime, mockNotifications } from '../pageData';
 
 export default function NotificationsPage() {

@@ -1,3 +1,4 @@
+// UniSphere notu: Navbar birden fazla sayfada tekrar eden arayuz ihtiyacini karsilar.
 
 import { Link, useLocation } from 'react-router-dom';
 

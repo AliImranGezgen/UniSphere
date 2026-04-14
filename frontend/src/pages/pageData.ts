@@ -1,3 +1,4 @@
+// UniSphere notu: Page Data sayfa verilerini ve gorunumunu destekleyen ortak parcadir.
 import type { Event } from '../types/event';
 
 export type MockApplication = {

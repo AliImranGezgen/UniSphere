@@ -1,3 +1,4 @@
+// UniSphere notu: Event Detail Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getEventById } from '../../services/eventService';

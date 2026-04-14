@@ -1,3 +1,4 @@
+<!-- UniSphere notu: Frontend tarafini calistirirken bakilacak kisa proje notlari burada durur. -->
 # 🎨 UniSphere - Frontend
 
 Bu klasör, UniSphere projesinin **React ve Vite** kullanılarak geliştirilen kullanıcı arayüzünü içerir.

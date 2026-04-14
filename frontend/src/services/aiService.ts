@@ -1,3 +1,4 @@
+// UniSphere notu: Ai Service API cagrilarini tek noktadan yonetmek icin ayrildi.
 import { api } from './api';
 
 export type RecommendationResult = {

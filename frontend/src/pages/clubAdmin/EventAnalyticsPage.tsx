@@ -1,3 +1,4 @@
+// UniSphere notu: Event Analytics Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useEffect, useState } from 'react';
 import { getEvents } from '../../services/eventService';
 import type { Event } from '../../types/event';

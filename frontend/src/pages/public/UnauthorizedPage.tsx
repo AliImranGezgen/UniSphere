@@ -1,3 +1,4 @@
+// UniSphere notu: Unauthorized Page oturum acmadan erisilen sayfa akisini tasir.
 import { Link } from 'react-router-dom';
 
 export default function UnauthorizedPage() {

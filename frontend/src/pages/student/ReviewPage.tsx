@@ -1,3 +1,4 @@
+// UniSphere notu: Review Page ogrenci deneyimindeki ana ekranlardan biridir.
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 

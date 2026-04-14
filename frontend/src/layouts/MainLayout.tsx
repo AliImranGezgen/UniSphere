@@ -1,3 +1,4 @@
+// UniSphere notu: Main Layout ortak sayfa iskeletini ve navigasyon duzenini kurar.
 
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';

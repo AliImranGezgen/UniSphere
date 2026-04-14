@@ -1,3 +1,4 @@
+// UniSphere notu: My Events Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { deleteEvent, getEvents } from '../../services/eventService';

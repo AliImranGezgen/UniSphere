@@ -1,3 +1,4 @@
+// UniSphere notu: Protected Route birden fazla sayfada tekrar eden arayuz ihtiyacini karsilar.
 
 import { Navigate } from 'react-router-dom';
 

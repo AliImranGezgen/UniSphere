@@ -1,3 +1,4 @@
+// UniSphere notu: Demo Navigation Page oturum acmadan erisilen sayfa akisini tasir.
 import { Link } from 'react-router-dom';
 
 const groups = [
