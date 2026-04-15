@@ -1,5 +1,6 @@
 namespace UniSphere.Core.Entities
 {
+    //Başvuruların durumlarını ve başvuruda istenen bilgileri tutan sınıf ve enum.
     public enum ApplicationStatus //Eventlere başvuru yapan kişilerin durumlarını enum olarak tutar.
     {
         Pending, //Başvuru yapıldı ama karar verilmedi.

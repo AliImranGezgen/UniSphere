@@ -28,6 +28,7 @@ namespace UniSphere.API.Controllers
         }
 
         // GÖREV 2: Yeni Kulüp Oluştur (POST api/clubs)
+        //test
         [HttpPost]
         public async Task<IActionResult> Create(CreateClubDto dto)
         {

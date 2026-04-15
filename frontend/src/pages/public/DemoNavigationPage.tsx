@@ -61,7 +61,6 @@ export default function DemoNavigationPage() {
           <div className="panel-eyebrow">Sunum Modu</div>
           <h1 className="panel-title">UniSphere demo rotaları</h1>
           <p className="panel-subtitle">
-            Sunum sırasında tek tek URL yazmadan, rol bazlı tüm ekranlara buradan geç.
           </p>
         </section>
 
