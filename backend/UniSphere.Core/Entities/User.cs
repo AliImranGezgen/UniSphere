@@ -33,4 +33,5 @@ public class User
 
     // Kullanıcının kulüplerdeki yetkilendirme listesi (Başkan, Üye vb.)
     public ICollection<ClubRoleAssignment> ClubRoles { get; set; } = new List<ClubRoleAssignment>();
-}
+    // 3. Faz: Kullanıcının kulüp üyelikleri
+    public ICollection<ClubMembership> ClubMemberships { get; set; } = new List<ClubMembership>();}

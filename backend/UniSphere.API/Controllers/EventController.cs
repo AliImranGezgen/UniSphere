@@ -113,12 +113,12 @@ namespace UniSphere.API.Controllers
             if (dto.PosterImage != null)
             {
                 // Eski dosyayı sil
-                if (!string.IsNullOrEmpty(existingEvent.PosterImagePath))
+                if (!string.IsNullOrEmpty(existingEvent.PosterUrl)) // 3. Faz: PosterUrl olarak güncellendi
                 {
                     var oldPath = Path.Combine(
                         _env.WebRootPath ?? _env.ContentRootPath,
                         "uploads",
-                        existingEvent.PosterImagePath);
+                        existingEvent.PosterUrl);
                     if (System.IO.File.Exists(oldPath))
                         System.IO.File.Delete(oldPath);
                 }
@@ -126,15 +126,16 @@ namespace UniSphere.API.Controllers
                 string? newPoster;
                 try { newPoster = await SavePosterAsync(dto.PosterImage); }
                 catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-                existingEvent.PosterImagePath = newPoster;
+                existingEvent.PosterUrl = newPoster; // 3. Faz: PosterUrl olarak güncellendi
             }
 
-            existingEvent.Title       = dto.Title;
+            existingEvent.Name       = dto.Title; // 3. Faz: Name olarak güncellendi
             existingEvent.Description = dto.Description;
-            existingEvent.EventDate   = parsedDate;
-            existingEvent.Location    = dto.Location;
-            existingEvent.Capacity    = dto.Capacity;
+            existingEvent.Date   = parsedDate.ToString("yyyy-MM-dd"); // 3. Faz: Date string olarak
+            existingEvent.Time   = parsedDate.ToString("HH:mm"); // 3. Faz: Time string olarak
+            existingEvent.MaxParticipants    = dto.Capacity; // 3. Faz: MaxParticipants olarak
             existingEvent.ClubId      = dto.ClubId;
+            existingEvent.Category    = dto.Category ?? string.Empty; // 3. Faz: Category eklendi
 
             await _repository.UpdateEventAsync(existingEvent);
 
@@ -150,12 +151,12 @@ namespace UniSphere.API.Controllers
                 return NotFound("Silinecek etkinlik zaten yok.");
 
             // Afiş dosyasını da sil
-            if (!string.IsNullOrEmpty(existingEvent.PosterImagePath))
+            if (!string.IsNullOrEmpty(existingEvent.PosterUrl)) // 3. Faz: PosterUrl olarak güncellendi
             {
                 var path = Path.Combine(
                     _env.WebRootPath ?? _env.ContentRootPath,
                     "uploads",
-                    existingEvent.PosterImagePath);
+                    existingEvent.PosterUrl);
                 if (System.IO.File.Exists(path))
                     System.IO.File.Delete(path);
             }

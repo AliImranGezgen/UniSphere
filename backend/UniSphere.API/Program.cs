@@ -42,7 +42,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Yorum/Puan
 builder.Services.AddScoped<IRecommendationService, RecommendationService>(); // Öneri sistemi için DI kaydı
 builder.Services.AddScoped<INoShowPredictionService, NoShowPredictionService>(); // No-show tahmin servisi için DI kaydı
 builder.Services.AddScoped<IClubRoleService, ClubRoleService>(); // Kulüp içi rol yönetimi için DI kaydı
-builder.Services.AddScoped<IClubRoleService, ClubRoleService>(); // Topluluk içi rol atamaları için
+builder.Services.AddScoped<ClubMembershipService>(); // 3. Faz: Topluluk üyeliği join/leave servis kaydı
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

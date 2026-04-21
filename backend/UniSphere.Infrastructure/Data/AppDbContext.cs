@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Notification> Notifications { get; set; } // Kullanıcı bildirimlerini tutan tablo
     public DbSet<ClubRoleAssignment> ClubRoleAssignments { get; set; } // Kulüp rol atamalarını tutan tablo
+    public DbSet<ClubMembership> ClubMemberships { get; set; } // 3. Faz: Kulüp üyeliklerini tutan tablo
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -107,6 +108,27 @@ public class AppDbContext : DbContext
                 
             // Hızlı sorgulama için Rol kolonuna indeks
             entity.HasIndex(cra => cra.Role);
+        });
+
+        // 3. Faz: ClubMembership Tablosu Yapılandırması
+        modelBuilder.Entity<ClubMembership>(entity =>
+        {
+            // Unique Constraint: Bir kullanıcı bir kulübe sadece bir kez üye olabilir
+            entity.HasIndex(cm => new { cm.UserId, cm.ClubId }).IsUnique();
+
+            // İlişkiler
+            entity.HasOne(cm => cm.Club)
+                .WithMany(c => c.Memberships)
+                .HasForeignKey(cm => cm.ClubId);
+
+            entity.HasOne(cm => cm.User)
+                .WithMany(u => u.ClubMemberships)
+                .HasForeignKey(cm => cm.UserId);
+
+            // Performans için Index'ler
+            entity.HasIndex(cm => cm.UserId);
+            entity.HasIndex(cm => cm.ClubId);
+            entity.HasIndex(cm => cm.Status);
         });
     }
 }

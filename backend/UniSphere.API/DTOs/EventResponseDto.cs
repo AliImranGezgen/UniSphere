@@ -9,6 +9,7 @@ namespace UniSphere.API.DTOs
         // EventDate string olarak döndürülüyor (ISO 8601 format)
         public string EventDate { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty; // 3. Faz: Kategori eklendi
         public int ClubId { get; set; }
         public string ClubName { get; set; } = null!;
         // Afiş görseli URL'i (null ise afiş yok)

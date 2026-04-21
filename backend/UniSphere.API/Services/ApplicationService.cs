@@ -33,7 +33,7 @@ namespace UniSphere.API.Services
 
             var approvedCount = await _repository.GetApprovedCountAsync(eventId);
 
-            if (approvedCount < eventEntity.Capacity)
+            if (approvedCount < eventEntity.MaxParticipants) // 3. Faz: MaxParticipants olarak güncellendi
                 application.Status = ApplicationStatus.Approved;
             else
                 application.Status = ApplicationStatus.Waitlisted;

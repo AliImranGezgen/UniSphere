@@ -9,6 +9,7 @@ namespace UniSphere.API.DTOs
         // Tarih string olarak alınıyor, Controller parse eder
         public string EventDate { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
+        public string? Category { get; set; } // 3. Faz: Kategori eklendi
         public int ClubId { get; set; }
         public string ClubName { get; set; } = null!;
         public IFormFile? PosterImage { get; set; }

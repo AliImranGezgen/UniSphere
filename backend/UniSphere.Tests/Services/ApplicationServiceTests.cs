@@ -52,7 +52,7 @@ namespace UniSphere.Tests.Services
             _mockAppRepo.Setup(r => r.ExistsByUserAndEventAsync(userId, eventId)).ReturnsAsync(false);
             
             _mockEventRepo.Setup(r => r.GetByEventIdAsync(eventId))
-                .ReturnsAsync(new Event { Id = eventId, Capacity = 50 }); // Capacity is 50
+                .ReturnsAsync(new Event { Id = eventId, MaxParticipants = 50 }); // 3. Faz: MaxParticipants olarak güncellendi
                 
             _mockAppRepo.Setup(r => r.GetApprovedCountAsync(eventId))
                 .ReturnsAsync(50); // Currently 50 approved (Capacity reached)
@@ -77,7 +77,7 @@ namespace UniSphere.Tests.Services
             _mockAppRepo.Setup(r => r.ExistsByUserAndEventAsync(userId, eventId)).ReturnsAsync(false);
             
             _mockEventRepo.Setup(r => r.GetByEventIdAsync(eventId))
-                .ReturnsAsync(new Event { Id = eventId, Capacity = 50 }); // Capacity is 50
+                .ReturnsAsync(new Event { Id = eventId, MaxParticipants = 50 }); // 3. Faz: MaxParticipants olarak güncellendi
                 
             _mockAppRepo.Setup(r => r.GetApprovedCountAsync(eventId))
                 .ReturnsAsync(49); // Currently 49 approved (Has 1 spot left)

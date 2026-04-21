@@ -6,28 +6,25 @@ public class Event
     public int Id { get; set; }
 
     // Etkinliğin başlığı
-    public string Title { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty; // Migration'da Name, ama Title olarak kullanılmış, düzeltelim Name
 
     // Katılımcı kapasitesi
-    public int Capacity { get; set; }
+    public int MaxParticipants { get; set; } // Migration'da MaxParticipants
 
     // Etkinlik açıklaması
     public string Description { get; set; } = string.Empty;
 
-    // Etkinlik tarihi
-    public DateTime EventDate { get; set; }
+    // Etkinlik tarihi (string olarak tutuluyor)
+    public string Date { get; set; } = string.Empty;
 
-    // Etkinlik konumu
-    public string Location { get; set; } = string.Empty;
+    // Etkinlik saati (string)
+    public string Time { get; set; } = string.Empty;
 
-    // Etkinlik afiş görseli dosya yolu (opsiyonel)
-    public string? PosterImagePath { get; set; }
+    // Etkinlik afiş görseli URL'si
+    public string PosterUrl { get; set; } = string.Empty;
 
     // Hangi kulübe ait olduğu
     public int ClubId { get; set; }
-
-    // Etkinlik kategorisi
-    public string Category { get; set; } = string.Empty;
 
     // Kulüp ilişkisi (Navigation Property)
     public Club Club { get; set; } = null!;
@@ -37,4 +34,10 @@ public class Event
 
     // 🔥 Bu etkinlik için bırakılan yorumlar
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    // 3. Faz: Etkinlik kategorisi (technical, social, vb.)
+    public string Category { get; set; } = string.Empty;
+
+    // Computed property: Date ve Time'den EventDate oluştur (servislerde kullanım için)
+    public DateTime EventDate => DateTime.TryParse($"{Date} {Time}", out var dt) ? dt : DateTime.MinValue;
 }
