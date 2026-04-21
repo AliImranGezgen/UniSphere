@@ -30,4 +30,7 @@ public class User
 
     // Kullanıcıya ait bildirimlerin listesi (Bire Çok İlişki)
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    // Kullanıcının kulüplerdeki yetkilendirme listesi (Başkan, Üye vb.)
+    public ICollection<ClubRoleAssignment> ClubRoles { get; set; } = new List<ClubRoleAssignment>();
 }
