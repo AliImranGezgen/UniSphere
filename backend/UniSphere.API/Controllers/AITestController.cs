@@ -32,6 +32,29 @@ public class AITestController : ControllerBase
         return Ok(result);
     }
 
+    // 3. Faz: Kullanıcıya etkinlik önerileri dönen mock recommendation contract endpoint'i.
+    [HttpGet("recommend-events/{userId}")]
+    public IActionResult RecommendEvents(int userId)
+    {
+        var recommendations = new List<EventRecommendationDto>
+        {
+            new()
+            {
+                EventId = 1,
+                Score = 0.92,
+                Reason = $"Kullanıcı {userId} için teknoloji ilgisine göre önerildi."
+            },
+            new()
+            {
+                EventId = 2,
+                Score = 0.81,
+                Reason = "Benzer öğrencilerin başvurduğu popüler etkinlik."
+            }
+        };
+
+        return Ok(recommendations);
+    }
+
     [HttpGet("noshow")]
     public IActionResult GetNoShowPrediction()
     {
@@ -45,5 +68,54 @@ public class AITestController : ControllerBase
         });
 
         return Ok(result);
+    }
+
+    // 3. Faz: No-show risk tahmini için mock contract endpoint'i.
+    [HttpPost("predict-noshow")]
+    public IActionResult PredictNoShow([FromBody] NoShowPredictionRequestDto request)
+    {
+        var response = new NoShowPredictionDto
+        {
+            UserId = request.UserId,
+            EventId = request.EventId,
+            RiskLevel = "Medium",
+            RiskScore = 0.57,
+            Reason = "Geçmiş katılım örüntüsüne göre orta seviye no-show riski."
+        };
+
+        return Ok(response);
+    }
+
+    // 3. Faz: Şüpheli yorum tespiti için mock contract endpoint'i.
+    [HttpPost("detect-suspicious-review")]
+    public IActionResult DetectSuspiciousReview([FromBody] SuspiciousReviewRequestDto request)
+    {
+        var response = new SuspiciousReviewDto
+        {
+            ReviewId = request.ReviewId,
+            RiskLevel = string.IsNullOrWhiteSpace(request.Comment) ? "Low" : "Medium",
+            Reason = "Mock analiz: yorum içeriği basit risk kontrolünden geçirildi."
+        };
+
+        return Ok(response);
+    }
+
+    // 3. Faz: Etkinlik açıklaması iyileştirme için mock contract endpoint'i.
+    [HttpPost("improve-description")]
+    public IActionResult ImproveDescription([FromBody] DescriptionImprovementRequestDto request)
+    {
+        var originalText = request.OriginalText ?? string.Empty;
+        var improvedText = string.IsNullOrWhiteSpace(originalText)
+            ? "Etkinliğin amacı, kapsamı ve katılımcılara sağlayacağı faydalar net şekilde açıklanmalıdır."
+            : $"{originalText.Trim()} Katılımcılar etkinlik sonunda konuya dair uygulanabilir kazanımlar elde edecektir.";
+
+        var response = new DescriptionImprovementDto
+        {
+            OriginalText = originalText,
+            ImprovedText = improvedText,
+            Notes = "Mock iyileştirme: metin daha davetkar ve bilgilendirici hale getirildi."
+        };
+
+        return Ok(response);
     }
 }

@@ -81,12 +81,13 @@ namespace UniSphere.API.Services
             if (existingEvent == null)
                 return null;
 
-            existingEvent.Title = dto.Title;
+            existingEvent.Name = dto.Title; // 3. Faz: Name olarak güncellendi
             existingEvent.Description = dto.Description;
-            existingEvent.EventDate = parsedDate;
-            existingEvent.Location = dto.Location;
-            existingEvent.Capacity = dto.Capacity;
+            existingEvent.Date = parsedDate.ToString("yyyy-MM-dd"); // 3. Faz: Date string
+            existingEvent.Time = parsedDate.ToString("HH:mm"); // 3. Faz: Time string
+            existingEvent.MaxParticipants = dto.Capacity; // 3. Faz: MaxParticipants olarak
             existingEvent.ClubId = dto.ClubId;
+            existingEvent.Category = dto.Category ?? string.Empty; // 3. Faz: Category eklendi
 
             await _repository.UpdateEventAsync(existingEvent);
 

@@ -11,18 +11,19 @@ namespace UniSphere.API.Mappings
             return new EventResponseDto
             {
                 EventId    = eventModel.Id,
-                Title      = eventModel.Title,
-                Capacity   = eventModel.Capacity,
+                Title      = eventModel.Name, // 3. Faz: Name olarak güncellendi
+                Capacity   = eventModel.MaxParticipants, // 3. Faz: MaxParticipants olarak güncellendi
                 Description = eventModel.Description,
                 // DateTime → ISO 8601 string ("yyyy-MM-ddTHH:mm:ss")
                 EventDate  = eventModel.EventDate.ToString("yyyy-MM-ddTHH:mm:ss"),
-                Location   = eventModel.Location,
+                Location   = "N/A", // Eski Location kaldırıldı, placeholder
+                Category   = eventModel.Category, // 3. Faz: Category eklendi
                 ClubId     = eventModel.ClubId,
                 ClubName   = eventModel.Club?.Name ?? string.Empty,
                 // Poster URL'i: dosya yolu varsa tam URL oluştur
-                PosterImageUrl = string.IsNullOrEmpty(eventModel.PosterImagePath)
+                PosterImageUrl = string.IsNullOrEmpty(eventModel.PosterUrl)
                     ? null
-                    : $"{baseUrl}/uploads/{eventModel.PosterImagePath}"
+                    : $"{baseUrl}/uploads/{eventModel.PosterUrl}"
             };
         }
 
@@ -32,14 +33,15 @@ namespace UniSphere.API.Mappings
         {
             return new Event
             {
-                Title       = createDto.Title,
-                Capacity    = createDto.Capacity,
+                Name       = createDto.Title, // 3. Faz: Name olarak
+                MaxParticipants    = createDto.Capacity, // 3. Faz: MaxParticipants olarak
                 Description = createDto.Description,
                 // String → DateTime parse (desteklenen formatlar: ISO 8601, "dd.MM.yyyy HH:mm")
-                EventDate   = ParseEventDate(createDto.EventDate),
-                Location    = createDto.Location,
+                Date   = ParseEventDate(createDto.EventDate).ToString("yyyy-MM-dd"), // 3. Faz: Date string
+                Time   = ParseEventDate(createDto.EventDate).ToString("HH:mm"), // 3. Faz: Time string
                 ClubId      = createDto.ClubId,
-                PosterImagePath = posterPath
+                PosterUrl = posterPath, // 3. Faz: PosterUrl olarak
+                Category = createDto.Category ?? string.Empty // 3. Faz: Category eklendi
             };
         }
 

@@ -24,6 +24,9 @@ namespace UniSphere.API.DTOs
         [Required(ErrorMessage = "Mekan/Lokasyon boş bırakılamaz.")]
         public string Location { get; set; } = string.Empty;
 
+        // 3. Faz: Etkinlik kategorisi
+        public string? Category { get; set; }
+
         // Hangi kulubün bu etkinliği düzenlediğini belirten anahtar.
         [Required(ErrorMessage = "Kulüp bilgisi zorunludur.")]
         public int ClubId { get; set; }

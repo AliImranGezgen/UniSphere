@@ -14,6 +14,9 @@ public class Notification
     // Bildirimin asıl içeriği/mesajı
     public string Message { get; set; } = string.Empty;
 
+    // 3. Faz: Sistem duyurularını filtrelemek için bildirim tipi (örn. "System")
+    public string Type { get; set; } = string.Empty;
+
     // Kullanıcının bildirimi okuyup okumadığını takip eder (Varsayılan olarak okunamadı)
     public bool IsRead { get; set; } = false;
 

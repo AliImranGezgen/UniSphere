@@ -92,16 +92,14 @@ public class ClubRoleService : IClubRoleService
             throw new InvalidOperationException("Başkan atamaları özel metoda (AssignPresident) tabidir.");
         }
 
-        // Eski rolü varsa sil
+        // Eski rolü varsa kontrol et
         var existingRole = await _context.ClubRoleAssignments
-            .FirstOrDefaultAsync(cra => cra.ClubId == clubId && cra.UserId == targetUserId);
+            .FirstOrDefaultAsync(cra => cra.ClubId == clubId && cra.UserId == targetUserId && cra.Role == role);
             
         if (existingRole != null)
         {
             // Kullanıcı zaten aynı roldeyse başarılı dön
-            if (existingRole.Role == role) return true;
-            
-            _context.ClubRoleAssignments.Remove(existingRole);
+            return true;
         }
 
         var newAssignment = new ClubRoleAssignment
@@ -118,7 +116,7 @@ public class ClubRoleService : IClubRoleService
         return true;
     }
 
-    public async Task<bool> RevokeRoleAsync(int clubId, int revokerUserId, int targetUserId)
+    public async Task<bool> RevokeRoleAsync(int clubId, int revokerUserId, int targetUserId, string role)
     {
         var revokerUser = await _context.Users.FindAsync(revokerUserId);
         var revokerRole = await GetUserRoleInClubAsync(clubId, revokerUserId);
@@ -130,7 +128,7 @@ public class ClubRoleService : IClubRoleService
         }
 
         var targetRole = await _context.ClubRoleAssignments
-            .FirstOrDefaultAsync(cra => cra.ClubId == clubId && cra.UserId == targetUserId);
+            .FirstOrDefaultAsync(cra => cra.ClubId == clubId && cra.UserId == targetUserId && cra.Role == role);
 
         if (targetRole == null)
             return false;
