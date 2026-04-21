@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Application> Applications { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Notification> Notifications { get; set; } // Kullanıcı bildirimlerini tutan tablo
+    public DbSet<ClubRoleAssignment> ClubRoleAssignments { get; set; } // Kulüp rol atamalarını tutan tablo
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -87,6 +88,25 @@ public class AppDbContext : DbContext
 
             // Veritabanında UserId bazlı arama (kullanıcının bildirimlerini listeleme) yapılacağı için Index ekliyoruz.
             entity.HasIndex(n => n.UserId);
+        });
+
+        // ClubRoleAssignment Tablosu Yapılandırması
+        modelBuilder.Entity<ClubRoleAssignment>(entity =>
+        {
+            // Unique Constraint: Bir kullanıcının bir kulüpte aynı anda sadece bir rolü (kaydı) olabilir
+            entity.HasIndex(cra => new { cra.ClubId, cra.UserId }).IsUnique();
+
+            // İlişkiler
+            entity.HasOne(cra => cra.Club)
+                .WithMany(c => c.RoleAssignments)
+                .HasForeignKey(cra => cra.ClubId);
+
+            entity.HasOne(cra => cra.User)
+                .WithMany(u => u.ClubRoles)
+                .HasForeignKey(cra => cra.UserId);
+                
+            // Hızlı sorgulama için Rol kolonuna indeks
+            entity.HasIndex(cra => cra.Role);
         });
     }
 }

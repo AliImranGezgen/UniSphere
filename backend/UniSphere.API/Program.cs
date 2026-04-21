@@ -9,6 +9,9 @@ using UniSphere.Core.Interfaces;
 using UniSphere.Core.AI.Interfaces;
 using UniSphere.Infrastructure.Repositories;
 using UniSphere.Infrastructure.Services;
+using UniSphere.API.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using UniSphere.Core.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +41,8 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // 
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>(); // Yorum/Puan veritabanı işlemleri için
 builder.Services.AddScoped<IRecommendationService, RecommendationService>(); // Öneri sistemi için DI kaydı
 builder.Services.AddScoped<INoShowPredictionService, NoShowPredictionService>(); // No-show tahmin servisi için DI kaydı
-
+builder.Services.AddScoped<IClubRoleService, ClubRoleService>(); // Kulüp içi rol yönetimi için DI kaydı
+builder.Services.AddScoped<IClubRoleService, ClubRoleService>(); // Topluluk içi rol atamaları için
 // Swagger - API dokümantasyonu ve test arayüzü eklemek için
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -81,8 +85,20 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Rol tabanlı yetkilendirme (Authorization) için servislere ekliyoruz
-builder.Services.AddAuthorization();
+// Rol tabanlı yetkilendirme (Authorization) ve Policy'ler
+builder.Services.AddHttpContextAccessor(); // Route verilerine erişim (clubId vs.)
+builder.Services.AddScoped<IAuthorizationHandler, ClubRoleAuthorizationHandler>(); // Custom Handler
+
+builder.Services.AddAuthorization(options =>
+{
+    // Kulüp başkanına özel policy
+    options.AddPolicy("MustBeClubPresident", policy =>
+        policy.Requirements.Add(new ClubRoleRequirement(ClubRoles.President)));
+        
+    // Kulüp başkanı veya yardımcısına özel policy
+    options.AddPolicy("MustBeClubElevated", policy =>
+        policy.Requirements.Add(new ClubRoleRequirement(ClubRoles.President, ClubRoles.VicePresident)));
+});
 
 // Veritabanı bağlantı dizesini appsettings.json'dan okuyoruz
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
