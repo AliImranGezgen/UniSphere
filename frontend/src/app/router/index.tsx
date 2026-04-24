@@ -13,6 +13,7 @@ import UnauthorizedPage from '../../pages/public/UnauthorizedPage';
 import NotFoundPage from '../../pages/public/NotFoundPage';
 import EventsDiscoverPage from '../../pages/public/EventsDiscoverPage';
 import ClubsDiscoverPage from '../../pages/public/ClubsDiscoverPage';
+import ClubDetailPage from '../../pages/public/ClubDetailPage';
 import DemoNavigationPage from '../../pages/public/DemoNavigationPage';
 
 import StudentDashboard from '../../pages/student/DashboardPage';
@@ -41,7 +42,7 @@ import ModerationPage from '../../pages/systemAdmin/ModerationPage';
 import UsersPage from '../../pages/systemAdmin/UsersPage';
 
 export const router = createBrowserRouter([
-  { path: '/', element: <MainLayout />, children: [{ index: true, element: <HomePage /> }, { path: 'demo', element: <DemoNavigationPage /> }, { path: 'events', element: <EventsDiscoverPage /> }, { path: 'clubs', element: <ClubsDiscoverPage /> }, { path: 'unauthorized', element: <UnauthorizedPage /> }, { path: '*', element: <NotFoundPage /> }] },
+  { path: '/', element: <MainLayout />, children: [{ index: true, element: <HomePage /> }, { path: 'demo', element: <DemoNavigationPage /> }, { path: 'events', element: <EventsDiscoverPage /> }, { path: 'clubs', element: <ClubsDiscoverPage /> }, { path: 'clubs/:id', element: <ClubDetailPage /> }, { path: 'unauthorized', element: <UnauthorizedPage /> }, { path: '*', element: <NotFoundPage /> }] },
   { path: '/', element: <AuthLayout />, children: [{ path: 'login', element: <LoginPage /> }, { path: 'register', element: <RegisterPage /> }] },
   {
     path: '/student',

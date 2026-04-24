@@ -1,166 +1,249 @@
-// UniSphere notu: Home Page oturum acmadan erisilen sayfa akisini tasir.
-
+// UniSphere Notu: Bu sayfa sistemi bir landing page'den çıkarıp "Keşif Ekranı" haline getirmek için güncellenmiştir.
+// Öğrencilerin siteye girdiklerinde aktif kampüs hayatını görebilecekleri ana vitrindir.
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+// Dummy Veriler (Backend entegrasyonu aşamasında servislerden gelecek bilgiler)
+const mockAnnouncements = [
+  { id: 1, title: "Bahar Şenliği biletleri satışa çıktı!", date: "24 Eki 2026", type: "info" },
+  { id: 2, title: "Teknoloji Kulübü yöneticilerini arıyor", date: "22 Eki 2026", type: "warning" },
+];
+
+const mockCategories = [
+  { id: 1, name: "Teknoloji", icon: "💻", count: 12 },
+  { id: 2, name: "Kariyer", icon: "🚀", count: 8 },
+  { id: 3, name: "Sanat & Müzik", icon: "🎨", count: 15 },
+  { id: 4, name: "Spor", icon: "⚽", count: 6 },
+  { id: 5, name: "Bilim", icon: "🔬", count: 9 },
+  { id: 6, name: "Sosyal Sorumluluk", icon: "🤝", count: 4 },
+];
+
+const mockEvents = [
+  {
+    id: 101,
+    title: "Yapay Zeka ve Geleceğin Meslekleri",
+    clubName: "Teknoloji Kulübü",
+    date: "2026-10-28T14:00:00Z",
+    location: "Ana Konferans Salonu",
+    image: "tech-bg",
+    isPopular: true
+  },
+  {
+    id: 102,
+    title: "Gitar Dersi - Yeni Başlayanlar İçin",
+    clubName: "Müzik Kulübü",
+    date: "2026-10-29T18:00:00Z",
+    location: "Müzik Odası 2",
+    image: "music-bg",
+    isPopular: false
+  },
+  {
+    id: 103,
+    title: "Kariyer Günleri: Yazılım Sektörü",
+    clubName: "Kariyer Kulübü",
+    date: "2026-11-02T10:00:00Z",
+    location: "Seminer Salonu A",
+    image: "career-bg",
+    isPopular: true
+  }
+];
+
+const mockClubs = [
+  { id: 1, name: "Teknoloji Kulübü", memberCount: 350, description: "Yazılım, donanım ve yapay zeka tutkunları.", isFeatured: true },
+  { id: 2, name: "Doğa Sporları", memberCount: 220, description: "Kamp, doğa yürüyüşü ve tırmanış etkinlikleri.", isFeatured: true },
+  { id: 3, name: "IEEE", memberCount: 400, description: "Mühendislik hayatına profesyonel bir adım.", isFeatured: true },
+  { id: 4, name: "Tiyatro Topluluğu", memberCount: 150, description: "Sahne sanatlarına gönül verenler bir arada.", isFeatured: false },
+];
+
 export default function HomePage() {
+  const [loading, setLoading] = useState(true);
+
+  // Sayfa yüklenme efekti (ürün hissi için simulate)
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', flexDirection: 'column', gap: '1rem' }}>
+        <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid var(--border-color)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ color: 'var(--text-muted)' }}>Keşif ekranı yükleniyor...</p>
+        <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      {/* Hero Section */}
-      <section style={{ 
-        padding: '6rem 0', 
-        backgroundColor: 'var(--bg-main)',
-        borderBottom: '1px solid var(--border-color)',
-        textAlign: 'center'
-      }}>
-        <div className="container" style={{ maxWidth: '800px' }}>
-          <h1 style={{ 
-            fontSize: '3.5rem', 
-            fontWeight: 800, 
-            letterSpacing: '-0.02em',
-            marginBottom: '1.5rem',
-            lineHeight: 1.1,
-            color: 'var(--text-main)'
-          }}>
-            Kampüs hayatınız <span style={{ color: 'var(--primary)' }}>artık daha kolay.</span>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', paddingBottom: '4rem', background: 'var(--bg-secondary)' }}>
+      <style>{`
+        .discovery-header {
+          background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+          color: white;
+          padding: 3rem 0;
+          margin-bottom: 2rem;
+        }
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-main);
+          margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .section-title span { color: var(--primary); }
+        .grid-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 1.5rem;
+        }
+        .category-card {
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          border: 1px solid var(--border-color);
+          transition: all 0.2s;
+          cursor: pointer;
+        }
+        .category-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .club-card {
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          border: 1px solid var(--border-color);
+          transition: all 0.2s;
+        }
+        .club-card:hover { border-color: var(--primary-light); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .empty-state {
+          padding: 3rem;
+          text-align: center;
+          background: white;
+          border-radius: 12px;
+          border: 1px dashed var(--border-color);
+          color: var(--text-muted);
+        }
+        .announcement-bar {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          color: #1e3a8a;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+      `}</style>
+
+      {/* Üst Karşılama & Arama (Hero) */}
+      <div className="discovery-header">
+        <div className="container">
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>
+            Kampüste Neler Oluyor? 🌍
           </h1>
-          <p style={{ 
-            fontSize: '1.25rem', 
-            color: 'var(--text-muted)', 
-            marginBottom: '2.5rem',
-            lineHeight: 1.6
-          }}>
-            Etkinlikleri keşfedin, öğrenci kulüplerine katılın ve kampüs topluluğunuzla tek bir yerden bağlantı kurun. UniSphere üniversite deneyiminizi bir araya getiriyor.
+          <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '600px', marginBottom: '2rem' }}>
+            En aktif öğrenci toplulukları, merak uyandıran etkinlikler ve kampüs içi en son duyurular burada.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <Link to="/events" className="btn btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem' }}>
-              Etkinlikleri Keşfet
-            </Link>
-            <Link to="/clubs" className="btn btn-outline" style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem' }}>
-              Kulüpleri Görüntüle
-            </Link>
+          <div style={{ display: 'flex', gap: '1rem', maxWidth: '500px' }}>
+            <input 
+              type="text" 
+              placeholder="Etkinlik veya topluluk ara..." 
+              style={{ flex: 1, padding: '0.8rem 1.2rem', borderRadius: '8px', border: 'none', outline: 'none', fontSize: '1rem' }}
+            />
+            <button className="btn btn-primary" style={{ padding: '0.8rem 1.5rem' }}>Keşfet</button>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Features Section */}
-      <section className="section section-bg">
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '1rem' }}>İhtiyacınız olan her şey</h2>
-            <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)' }}>Öğrencilerin kampüs yolculuklarından en iyi şekilde yararlanmalarını sağlıyoruz.</p>
+      <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+        
+        {/* Sistem Duyuruları */}
+        <section>
+          <div className="section-title"><span>📢</span> Sistem Duyuruları</div>
+          {mockAnnouncements.length > 0 ? (
+            <div>
+              {mockAnnouncements.map(ann => (
+                <div key={ann.id} className="announcement-bar" style={ann.type === 'warning' ? { background: '#fffbeb', borderColor: '#fde68a', color: '#92400e' } : {}}>
+                  <div style={{ flex: 1, fontWeight: 600 }}>{ann.title}</div>
+                  <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{ann.date}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">Şu an için yeni bir duyuru bulunmuyor.</div>
+          )}
+        </section>
+
+        {/* Kategoriler */}
+        <section>
+          <div className="section-title"><span>📂</span> Kategorileri Keşfet</div>
+          <div className="grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+            {mockCategories.map(cat => (
+              <div key={cat.id} className="category-card">
+                <div style={{ fontSize: '2rem' }}>{cat.icon}</div>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{cat.name}</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{cat.count} Etkinlik</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Popüler Etkinlikler */}
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="section-title"><span>🔥</span> Popüler Etkinlikler</div>
+            <Link to="/events" className="btn btn-outline" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>Tümünü Gör</Link>
           </div>
           
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            {/* Feature Card 1 */}
-            <div className="card">
-              <div style={{ width: '48px', height: '48px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <div className="grid-cards">
+            {mockEvents.filter(e => e.isPopular).map(event => (
+              <div key={event.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: '160px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>Görsel</div>
+                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>{event.clubName}</div>
+                   <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', lineHeight: 1.4 }}>{event.title}</h3>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{new Date(event.date).toLocaleDateString('tr-TR')}</span>
+                      <Link to={`/events/${event.id}`} className="btn btn-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>Detaylar</Link>
+                   </div>
+                </div>
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Yaklaşan Etkinlikler</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.5 }}>Akademik etkinlikler, sosyal buluşmalar ve networking atölyelerini bulun ve tek tıkla kayıt olun.</p>
-            </div>
-
-            {/* Feature Card 2 */}
-            <div className="card">
-              <div style={{ width: '48px', height: '48px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Öğrenci Kulüpleri</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.5 }}>İlgi alanlarınıza uygun çeşitli öğrenci kulüplerini keşfedin ve topluluklara dahil olun. En son haberlerden geri kalmayın.</p>
-            </div>
-
-            {/* Feature Card 3 */}
-            <div className="card">
-              <div style={{ width: '48px', height: '48px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Kolay Kayıt</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.5 }}>Etkinliklere sadece bir tıklama ile kaydolun. Tüm etkinliklerinizi kişisel panelinizden rahatça takip edin.</p>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Upcoming Events Preview Section */}
-      <section className="section">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
-            <div>
-              <h2 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Popüler Etkinlikler</h2>
-              <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)' }}>Çevrenizde olup bitenleri sakın kaçırmayın.</p>
-            </div>
-            <Link to="/events" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Tümünü gör
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-            </Link>
+        {/* Öne Çıkan Topluluklar */}
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="section-title"><span>🌟</span> Öne Çıkan Topluluklar</div>
+            <Link to="/clubs" className="btn btn-outline" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>Tüm Topluluklar</Link>
           </div>
-
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            {/* Event Card Placeholder 1 */}
-            <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '180px', backgroundColor: 'var(--bg-tertiary)' }}></div>
-              <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                 <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '0.5rem' }}>TEKNOLOJİ KULÜBÜ</div>
-                 <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', lineHeight: 1.4 }}>React ve Frontend Mimarisine Giriş</h3>
-                 <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', flex: 1 }}>React ve Vite kullanarak modern frontend geliştirmeye derinlemesine bir dalış için bize katılın...</p>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>24 Eki • 14:00</span>
-                    <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Detaylar</button>
-                 </div>
+          <div className="grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+            {mockClubs.filter(c => c.isFeatured).map(club => (
+              <div key={club.id} className="club-card" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: '#94a3b8' }}>
+                  {club.name.charAt(0)}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.3rem' }}>{club.name}</h3>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>{club.memberCount} Üye</div>
+                  <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{club.description}</p>
+                </div>
+                <div>
+                  <Link to={`/clubs/${club.id}`} className="btn" style={{ padding: '0.5rem', background: '#eff6ff', color: 'var(--primary)' }}>&rarr;</Link>
+                </div>
               </div>
-            </div>
-
-            {/* Event Card Placeholder 2 */}
-            <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '180px', backgroundColor: 'var(--bg-tertiary)' }}></div>
-              <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                 <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '0.5rem' }}>KARİYER MERKEZİ</div>
-                 <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', lineHeight: 1.4 }}>Mülakat Maratonu Simülasyonu</h3>
-                 <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', flex: 1 }}>En prestijli teknoloji şirketlerinden profesyonellerle mülakat becerilerinizi test edin ve geliştirin.</p>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>26 Eki • 10:00</span>
-                    <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Detaylar</button>
-                 </div>
-              </div>
-            </div>
-
-             {/* Event Card Placeholder 3 */}
-             <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '180px', backgroundColor: 'var(--bg-tertiary)' }}></div>
-              <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                 <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '0.5rem' }}>MÜZİK KULÜBÜ</div>
-                 <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', lineHeight: 1.4 }}>Kampüste Akustik Gece</h3>
-                 <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', flex: 1 }}>Günün yorgunluğunu üzerinizden atın ve yetenekli öğrencilerin canlı akustik performanslarının tadını çıkarın.</p>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>28 Eki • 19:30</span>
-                    <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Detaylar</button>
-                 </div>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section style={{ padding: '5rem 0', backgroundColor: 'var(--primary)', color: 'white', textAlign: 'center' }}>
-        <div className="container">
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '1.5rem' }}>Başlamaya hazır mısınız?</h2>
-          <p style={{ fontSize: '1.2rem', marginBottom: '2.5rem', opacity: 0.9, maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-            Bugün hesabınızı oluşturun ve kampüsünüzün sunduğu tüm fırsatları keşfetmeye hemen başlayın.
-          </p>
-          <Link to="/register" className="btn" style={{ backgroundColor: 'white', color: 'var(--primary)', fontSize: '1.1rem', padding: '0.8rem 2rem' }}>
-            Ücretsiz Kayıt Ol
-          </Link>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
