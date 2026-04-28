@@ -22,8 +22,9 @@ export default function Sidebar() {
   const profileIcon = icon(<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>);
   const scanIcon = icon(<><path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" /><path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" /><path d="M7 8h10M7 12h10M7 16h6" /></>);
   const menuItems: MenuItem[] = location.pathname.startsWith('/club-admin')
-    ? [
+      ? [
         { title: 'Kulüp Paneli', path: '/club-admin/dashboard', icon: dashboardIcon },
+        { title: 'Kulüp Profili', path: '/club-admin/profile', icon: profileIcon },
         { title: 'Etkinliklerim', path: '/club-admin/events', icon: calendarIcon },
         { title: 'Yeni Etkinlik', path: '/club-admin/events/create', icon: icon(<path d="M12 5v14M5 12h14" />) },
         { title: 'Katılımcılar', path: '/club-admin/participants', icon: usersIcon },

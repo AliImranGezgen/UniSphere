@@ -1,29 +1,35 @@
-// UniSphere notu: Clubs Page sistem yoneticisi tarafindaki kontrol ekranini temsil eder.
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getClubs } from '../../services/clubService';
 import type { Club } from '../../types/club';
 
-const fallbackClubs: Club[] = [
-  { id: 1, name: 'Teknoloji Kulübü', description: 'Yazılım, yapay zeka ve ürün geliştirme etkinlikleri.', createdAt: '2026-01-10T10:00:00' },
-  { id: 2, name: 'Kariyer Kulübü', description: 'Mülakat, CV ve sektör buluşmaları.', createdAt: '2026-02-02T10:00:00' },
-  { id: 3, name: 'Müzik Kulübü', description: 'Konser, açık sahne ve atölyeler.', createdAt: '2026-02-20T10:00:00' },
-];
-
 export default function ClubsPage() {
-  const [clubs, setClubs] = useState<Club[]>(fallbackClubs);
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getClubs().then(setClubs).catch(() => setClubs(fallbackClubs));
+    getClubs()
+      .then(setClubs)
+      .catch(() => setError('Topluluk listesi yüklenemedi.'));
   }, []);
 
   return (
     <div className="panel-page">
       <div className="panel-shell">
         <section className="panel-heading" style={{ marginBottom: '1rem' }}>
-          <div className="panel-eyebrow">Kulüpler</div>
-          <h1 className="panel-title">Kulüp yönetimi</h1>
-          <p className="panel-subtitle">Platformdaki kulüpleri incele, açıklama ve etkinlik sahipliği akışını takip et.</p>
+          <div className="panel-eyebrow">Topluluklar</div>
+          <h1 className="panel-title">Topluluk yönetimi</h1>
+          <p className="panel-subtitle">Platformdaki toplulukları inceleyin, başkan atayın ve ekip yetkilerini yönetin.</p>
+          <div className="panel-actions">
+            <button className="btn btn-primary" onClick={() => navigate('/system-admin/clubs/create')}>
+              + Yeni topluluk oluştur
+            </button>
+          </div>
         </section>
+
+        {error ? <div className="notice notice-error" style={{ marginBottom: '1rem' }}>{error}</div> : null}
+
         <div className="panel-grid">
           {clubs.map((club) => (
             <article className="panel-card" key={club.id}>
@@ -31,10 +37,25 @@ export default function ClubsPage() {
                 <h2 className="panel-card__title">{club.name}</h2>
                 <span className="chip">#{club.id}</span>
               </div>
-              <p className="panel-card__text">{club.description}</p>
+              <p className="panel-card__text">{club.shortDescription || club.description}</p>
               <span className="status-pill">Oluşturuldu: {new Date(club.createdAt).toLocaleDateString('tr-TR')}</span>
+              <div className="panel-card__actions">
+                <button className="btn btn-sm" onClick={() => navigate(`/system-admin/clubs/${club.id}/assign-president`)}>
+                  Başkan ata
+                </button>
+                <button className="btn btn-sm" onClick={() => navigate(`/system-admin/clubs/${club.id}/team`)}>
+                  Ekip yönet
+                </button>
+              </div>
             </article>
           ))}
+
+          {clubs.length === 0 && !error ? (
+            <article className="panel-card">
+              <h2 className="panel-card__title">Henüz topluluk yok</h2>
+              <p className="panel-card__text">Yeni topluluk oluşturarak yönetim akışını başlatabilirsiniz.</p>
+            </article>
+          ) : null}
         </div>
       </div>
     </div>

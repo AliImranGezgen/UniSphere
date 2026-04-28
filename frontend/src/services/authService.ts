@@ -36,5 +36,11 @@ export const authService = {
   // Kullanıcının oturum açıp açmadığını kontrol eder.
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
+  },
+
+  // Tüm kullanıcıları getir (Admin için)
+  getAllUsers: async (): Promise<User[]> => {
+    const response = await api.get<User[]>('auth/users');
+    return response.data;
   }
 };

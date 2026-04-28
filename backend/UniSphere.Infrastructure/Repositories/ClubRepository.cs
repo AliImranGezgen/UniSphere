@@ -41,5 +41,12 @@ namespace UniSphere.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return club;
         }
+
+        public async Task<Club> UpdateAsync(Club club)
+        {
+            _context.Clubs.Update(club);
+            await _context.SaveChangesAsync();
+            return club;
+        }
     }
 }

@@ -28,6 +28,7 @@ import ReviewPage from '../../pages/student/ReviewPage';
 import TicketQrPage from '../../pages/student/TicketQrPage';
 
 import ClubAdminDashboard from '../../pages/clubAdmin/DashboardPage';
+import ClubProfileEditPage from '../../pages/clubAdmin/ClubProfileEditPage';
 import CreateEventPage from '../../pages/clubAdmin/CreateEventPage';
 import EditEventPage from '../../pages/clubAdmin/EditEventPage';
 import EventAnalyticsPage from '../../pages/clubAdmin/EventAnalyticsPage';
@@ -38,6 +39,9 @@ import QrScannerPage from '../../pages/clubAdmin/QrScannerPage';
 
 import SystemAdminDashboard from '../../pages/systemAdmin/DashboardPage';
 import SystemAdminClubsPage from '../../pages/systemAdmin/ClubsPage';
+import CreateClubPage from '../../pages/systemAdmin/CreateClubPage';
+import AssignPresidentPage from '../../pages/systemAdmin/AssignPresidentPage';
+import TeamManagementPage from '../../pages/systemAdmin/TeamManagementPage';
 import ModerationPage from '../../pages/systemAdmin/ModerationPage';
 import UsersPage from '../../pages/systemAdmin/UsersPage';
 
@@ -67,6 +71,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <ClubAdminDashboard /> },
       { path: 'dashboard', element: <ClubAdminDashboard /> },
+      { path: 'profile', element: <ClubProfileEditPage /> },
       { path: 'events', element: <MyEventsPage /> },
       { path: 'events/create', element: <CreateEventPage /> },
       { path: 'events/:eventId/edit', element: <EditEventPage /> },
@@ -83,6 +88,9 @@ export const router = createBrowserRouter([
       { index: true, element: <SystemAdminDashboard /> },
       { path: 'dashboard', element: <SystemAdminDashboard /> },
       { path: 'clubs', element: <SystemAdminClubsPage /> },
+      { path: 'clubs/create', element: <CreateClubPage /> },
+      { path: 'clubs/:clubId/assign-president', element: <AssignPresidentPage /> },
+      { path: 'clubs/:clubId/team', element: <TeamManagementPage /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'moderation', element: <ModerationPage /> },
     ],

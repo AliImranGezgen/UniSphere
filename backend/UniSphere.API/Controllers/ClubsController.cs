@@ -36,6 +36,17 @@ namespace UniSphere.API.Controllers
             return Ok(dtos);
         }
 
+        [HttpGet("{clubId:int}")]
+        public async Task<IActionResult> GetClubById(int clubId)
+        {
+            var club = await _repository.GetByIdAsync(clubId);
+
+            if (club == null)
+                return NotFound(new { message = "Kulüp bulunamadı." });
+
+            return Ok(club.ToDto());
+        }
+
         // GÖREV 2: Yeni Kulüp Oluştur (POST api/clubs)
         [HttpPost]
         [Authorize(Roles = "SystemAdmin")] // 2. KİLİT EKLENDİ: Sadece Admin kulüp açabilir!
@@ -72,6 +83,30 @@ namespace UniSphere.API.Controllers
                 return BadRequest(new { message = "Başkan ataması başarısız. Kullanıcı veya kulüp bulunamadı." });
 
             return Ok(new { message = "Başkan başarıyla atandı." });
+        }
+
+        [HttpPut("{clubId:int}")]
+        [Authorize(Policy = "MustBeClubPresident")]
+        public async Task<IActionResult> UpdateClub(int clubId, [FromBody] UpdateClubDto dto)
+        {
+            var club = await _repository.GetByIdAsync(clubId);
+
+            if (club == null)
+                return NotFound(new { message = "Kulüp bulunamadı." });
+
+            club.Name = dto.Name;
+            club.Description = dto.Description;
+            club.Logo = dto.Logo;
+            club.ShortDescription = dto.ShortDescription;
+            club.AboutText = dto.AboutText;
+            club.FoundedYear = dto.FoundedYear;
+            club.ContactEmail = dto.ContactEmail;
+            club.SocialLinks = dto.SocialLinks;
+            club.Website = dto.Website;
+
+            await _repository.UpdateAsync(club);
+
+            return Ok(club.ToDto());
         }
 
         // 3. Faz: Kullanıcı topluluğa onaysız ve doğrudan aktif üye olur (POST api/clubs/{clubId}/join)
@@ -137,6 +172,24 @@ namespace UniSphere.API.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("{clubId:int}/roles")]
+        [Authorize(Policy = "MustBeClubPresident")]
+        public async Task<IActionResult> GetClubRoles(int clubId)
+        {
+            var roles = await _clubRoleService.GetClubRoleAssignmentsAsync(clubId);
+            var result = roles.Select(role => new ClubRoleAssignmentResponseDto
+            {
+                ClubId = role.ClubId,
+                UserId = role.UserId,
+                UserName = role.User?.Name ?? string.Empty,
+                UserEmail = role.User?.Email ?? string.Empty,
+                Role = role.Role,
+                AssignedAt = role.AssignedAt
+            });
+
+            return Ok(result);
         }
 
         // GÖREV 5: Rol Silme (POST veya DELETE api/clubs/{clubId}/revoke-role/{userId})

@@ -112,4 +112,22 @@ public class AuthController : ControllerBase
     {
         return Ok("Yönetici yetkisi ile erişildi");
     }
+    [Authorize(Roles = UserRoles.SystemAdmin)]
+    [HttpGet("users")]
+    public IActionResult GetUsers()
+    {
+        var users = _context.Users
+            .OrderBy(u => u.Name)
+            .Select(u => new
+            {
+                u.Id,
+                u.Name,
+                u.Email,
+                u.Role,
+                u.CreatedAt
+            })
+            .ToList();
+
+        return Ok(users);
+    }
 }

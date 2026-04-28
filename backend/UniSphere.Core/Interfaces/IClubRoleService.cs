@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using UniSphere.Core.Entities;
 
 namespace UniSphere.Core.Interfaces;
 
@@ -15,4 +16,6 @@ public interface IClubRoleService
 
     // Kullanıcının belirli bir kulüpteki rolünü getirme (Authorization vb. için de faydalıdır)
     Task<string?> GetUserRoleInClubAsync(int clubId, int userId);
+
+    Task<IEnumerable<ClubRoleAssignment>> GetClubRoleAssignmentsAsync(int clubId);
 }

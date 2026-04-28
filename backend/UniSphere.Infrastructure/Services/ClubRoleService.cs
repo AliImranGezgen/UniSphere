@@ -152,4 +152,14 @@ public class ClubRoleService : IClubRoleService
 
         return assignment?.Role;
     }
+    public async Task<IEnumerable<ClubRoleAssignment>> GetClubRoleAssignmentsAsync(int clubId)
+    {
+        return await _context.ClubRoleAssignments
+            .AsNoTracking()
+            .Where(cra => cra.ClubId == clubId)
+            .Include(cra => cra.User)
+            .OrderBy(cra => cra.Role == ClubRoles.President ? 0 : 1)
+            .ThenBy(cra => cra.User.Name)
+            .ToListAsync();
+    }
 }
