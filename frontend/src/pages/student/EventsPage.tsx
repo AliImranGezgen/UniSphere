@@ -47,31 +47,39 @@ export default function EventsPage() {
         {loading ? <div className="notice">Etkinlikler yükleniyor...</div> : null}
 
         <div className="panel-grid panel-grid--wide">
-          {filtered.map((event) => {
-            const percent = getFillPercent(event);
-            return (
-              <article className="panel-card" key={event.eventId}>
-                <div className="panel-card__top">
-                  <div>
-                    <span className="chip">{event.clubName || `Kulüp #${event.clubId}`}</span>
-                    <h2 className="panel-card__title" style={{ marginTop: 10 }}>{event.title}</h2>
+          {filtered.length === 0 && !loading ? (
+            <div style={{ textAlign: 'center', padding: '4rem', background: 'white', borderRadius: '12px', border: '1px dashed var(--border-color)', gridColumn: '1 / -1' }}>
+              <div style={{ fontSize: '3rem', margin: '0 auto 1rem' }}>🔍</div>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 600 }}>Etkinlik Bulunamadı</h3>
+              <p style={{ color: 'var(--text-muted)' }}>Aradığınız kriterlere uygun bir etkinlik görünmüyor. Farklı kelimelerle tekrar deneyebilirsiniz.</p>
+            </div>
+          ) : (
+            filtered.map((event) => {
+              const percent = getFillPercent(event);
+              return (
+                <article className="panel-card" key={event.eventId}>
+                  <div className="panel-card__top">
+                    <div>
+                      <span className="chip">{event.clubName || `Kulüp #${event.clubId}`}</span>
+                      <h2 className="panel-card__title" style={{ marginTop: 10 }}>{event.title}</h2>
+                    </div>
+                    <span className="status-pill">{percent}% dolu</span>
                   </div>
-                  <span className="status-pill">{percent}% dolu</span>
-                </div>
-                <p className="panel-card__text">{event.description}</p>
-                <div className="panel-meta">
-                  <span className="chip">{formatDateTime(event.eventDate)}</span>
-                  <span className="chip">{event.location}</span>
-                  <span className="chip">{event.capacity} kontenjan</span>
-                </div>
-                <div className="progress-track"><div className="progress-fill" style={{ width: `${percent}%` }} /></div>
-                <div className="panel-actions">
-                  <Link className="btn btn-primary" to={`/student/events/${event.eventId}`}>Detaya Git</Link>
-                  <Link className="btn btn-outline" to={`/student/ticket/${event.eventId}`}>Bilet Önizle</Link>
-                </div>
-              </article>
-            );
-          })}
+                  <p className="panel-card__text">{event.description}</p>
+                  <div className="panel-meta">
+                    <span className="chip">{formatDateTime(event.eventDate)}</span>
+                    <span className="chip">{event.location}</span>
+                    <span className="chip">{event.capacity} kontenjan</span>
+                  </div>
+                  <div className="progress-track"><div className="progress-fill" style={{ width: `${percent}%` }} /></div>
+                  <div className="panel-actions">
+                    <Link className="btn btn-primary" to={`/student/events/${event.eventId}`}>Detaya Git</Link>
+                    <Link className="btn btn-outline" to={`/student/ticket/${event.eventId}`}>Bilet Önizle</Link>
+                  </div>
+                </article>
+              );
+            })
+          )}
         </div>
       </div>
     </div>
