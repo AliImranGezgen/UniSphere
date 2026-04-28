@@ -4,4 +4,20 @@ export interface Club {
   name: string;
   description: string;
   createdAt: string;
+  logo?: string;
+  shortDescription?: string;
+  aboutText?: string;
+  foundedYear?: number | null;
+  contactEmail?: string;
+  socialLinks?: string;
+  website?: string;
+}
+
+export interface ClubRoleAssignment {
+  clubId: number;
+  userId: number;
+  userName: string;
+  userEmail: string;
+  role: string;
+  assignedAt: string;
 }

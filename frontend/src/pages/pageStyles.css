@@ -120,6 +120,14 @@
   font-size: 0.92rem;
 }
 
+.panel-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
 .panel-meta {
   display: flex;
   flex-wrap: wrap;
@@ -254,6 +262,24 @@
   border: 1px solid #bfdbfe;
   background: #eff6ff;
   color: #1e40af;
+}
+
+.notice-success {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.notice-error {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .qr-box {

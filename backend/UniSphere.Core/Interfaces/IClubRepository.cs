@@ -9,6 +9,7 @@ namespace UniSphere.Core.Interfaces
         Task DeleteClubAsync(int Id);
         Task<Club?> GetByIdAsync(int Id);
         Task<Club> AddAsync(Club club);
+        Task<Club> UpdateAsync(Club club);
 
     }
 }
