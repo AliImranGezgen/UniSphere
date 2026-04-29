@@ -26,7 +26,14 @@ export default function RegisterPage() {
     } catch (err) {
       // Hata durumunda (örn: e-posta zaten kayıtlı) mesajı göster
       if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data || 'Kayıt işlemi başarısız oldu.');
+        const data = err.response.data;
+        if (typeof data === 'string') {
+          setError(data);
+        } else if (data && typeof data === 'object') {
+          setError(data.title || data.message || data.detail || 'Kayıt işlemi başarısız oldu.');
+        } else {
+          setError('Kayıt işlemi başarısız oldu.');
+        }
       } else {
         setError('Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
       }
