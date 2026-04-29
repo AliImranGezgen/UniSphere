@@ -58,7 +58,7 @@ namespace UniSphere.Infrastructure.Migrations
                         WHERE table_name = 'Events' AND column_name = 'PosterImagePath'
                     ) THEN
                         UPDATE ""Events""
-                        SET ""PosterUrl"" = COALESCE(NULLIF(""PosterUrl"", ''), ""PosterImagePath"");
+                        SET ""PosterUrl"" = COALESCE(NULLIF(""PosterUrl"", ''), ""PosterImagePath"", '');
                     END IF;
                 END
                 $$;
