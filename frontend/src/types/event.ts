@@ -9,4 +9,6 @@ export interface Event {
   clubId: number;
   clubName: string;
   posterImageUrl?: string | null;
+  category?: string;
+  applicationCount?: number;
 }

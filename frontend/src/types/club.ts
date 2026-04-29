@@ -11,6 +11,7 @@ export interface Club {
   contactEmail?: string;
   socialLinks?: string;
   website?: string;
+  memberCount?: number;
 }
 
 export interface ClubRoleAssignment {

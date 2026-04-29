@@ -28,7 +28,8 @@ namespace UniSphere.API.Services
             var application = new Application
             {
                 UserId = userId,
-                EventId = eventId
+                EventId = eventId,
+                CreatedAt = DateTime.UtcNow
             };
 
             var approvedCount = await _repository.GetApprovedCountAsync(eventId);

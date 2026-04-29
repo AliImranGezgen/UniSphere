@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { authService } from '../../services/authService';
 import { Link, useNavigate } from 'react-router-dom';
 import { getEvents } from '../../services/eventService';
+import { applicationService } from '../../services/applicationService';
 import type { Event } from '../../types/event';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -187,8 +188,9 @@ export default function EventsDiscoverPage() {
       setTimeout(() => navigate('/login'), 1500);
       return;
     }
-    // TODO: Giriş yapılmışsa başvuru akışı buraya eklenecek
-    showToast(`"${event.title}" etkinliğine başvurunuz alındı! 🎉`);
+    applicationService.applyToEvent(event.eventId)
+      .then((result) => showToast(result.message || `"${event.title}" etkinliğine başvurunuz alındı!`))
+      .catch(() => showToast('Başvuru alınamadı. Daha önce başvurmuş olabilir veya tekrar denemeniz gerekebilir.'));
   }, [navigate, showToast]);
 
   useEffect(() => {
