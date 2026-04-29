@@ -39,7 +39,14 @@ export default function LoginPage() {
     } catch (err) {
       // Hata durumunda backend'den gelen mesajı göster
       if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data || 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
+        const data = err.response.data;
+        if (typeof data === 'string') {
+          setError(data);
+        } else if (data && typeof data === 'object') {
+          setError(data.title || data.message || data.detail || 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
+        } else {
+          setError('Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
+        }
       } else {
         setError('Bir ağ hatası oluştu. Lütfen tekrar deneyin.');
       }
