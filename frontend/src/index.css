@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #eff6ff;
+  /* Colors - Indigo/Violet Theme */
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #e0e7ff;
   
-  --secondary: #475569;
+  --secondary: #6366f1;
   --text-main: #0f172a;
   --text-muted: #64748b;
   
@@ -16,6 +16,9 @@
   --bg-tertiary: #f1f5f9;
   
   --border-color: #e2e8f0;
+
+  /* Global Gradients */
+  --gradient-hero: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #9333ea 100%);
   
   /* Typography */
   --font-family: 'Inter', system-ui, sans-serif;

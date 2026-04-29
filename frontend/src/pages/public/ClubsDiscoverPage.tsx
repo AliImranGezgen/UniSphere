@@ -135,7 +135,7 @@ export default function ClubsDiscoverPage() {
 
         /* ── Hero Banner ── */
         .ev-hero {
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
+          background: var(--gradient-hero);
           padding: 4rem 0 5rem;
           position: relative;
           overflow: hidden;
