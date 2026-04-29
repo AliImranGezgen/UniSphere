@@ -35,6 +35,7 @@ builder.Services.AddCors(options =>
 // Servisler için Dependency Injection (DI) kayıtları
 // AddScoped: Her HTTP isteği için bir kez oluşturulur.
 builder.Services.AddScoped<TokenService>(); // JWT üretimi vb. işlemler için eklendi
+builder.Services.AddScoped<ApplicationService>(); // Etkinlik basvuru islemleri icin
 builder.Services.AddScoped<IClubRepository, ClubRepository>(); // Kulüp veritabanı işlemleri için
 builder.Services.AddScoped<IEventRepository, EventRepository>(); // Etkinlik veritabanı işlemleri için
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>(); // Başvuru veritabanı işlemleri için

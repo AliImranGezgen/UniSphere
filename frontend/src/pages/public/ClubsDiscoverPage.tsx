@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
-import { getClubs } from '../../services/clubService';
+import { getClubs, joinClub } from '../../services/clubService';
 import { getEvents } from '../../services/eventService';
 import type { Club } from '../../types/club';
 import type { Event } from '../../types/event';
@@ -120,7 +120,9 @@ export default function ClubsDiscoverPage() {
         setTimeout(() => navigate('/login'), 1200);
         return;
       }
-      showToast(`${club.name} kulübüne katılma isteğiniz alındı!`);
+      joinClub(club.id)
+        .then((result) => showToast(result.message || `${club.name} kulübüne katıldınız.`))
+        .catch(() => showToast('Topluluğa katılma işlemi tamamlanamadı. Lütfen tekrar deneyin.'));
     },
     [navigate, showToast]
   );

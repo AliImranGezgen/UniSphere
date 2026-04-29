@@ -2,67 +2,39 @@
 // Öğrencilerin siteye girdiklerinde aktif kampüs hayatını görebilecekleri ana vitrindir.
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-// Dummy Veriler (Backend entegrasyonu aşamasında servislerden gelecek bilgiler)
-const mockAnnouncements = [
-  { id: 1, title: "Bahar Şenliği biletleri satışa çıktı!", date: "24 Eki 2026", type: "info" },
-  { id: 2, title: "Teknoloji Kulübü yöneticilerini arıyor", date: "22 Eki 2026", type: "warning" },
-];
-
-const mockCategories = [
-  { id: 1, name: "Teknoloji", icon: "💻", count: 12 },
-  { id: 2, name: "Kariyer", icon: "🚀", count: 8 },
-  { id: 3, name: "Sanat & Müzik", icon: "🎨", count: 15 },
-  { id: 4, name: "Spor", icon: "⚽", count: 6 },
-  { id: 5, name: "Bilim", icon: "🔬", count: 9 },
-  { id: 6, name: "Sosyal Sorumluluk", icon: "🤝", count: 4 },
-];
-
-const mockEvents = [
-  {
-    id: 101,
-    title: "Yapay Zeka ve Geleceğin Meslekleri",
-    clubName: "Teknoloji Kulübü",
-    date: "2026-10-28T14:00:00Z",
-    location: "Ana Konferans Salonu",
-    image: "tech-bg",
-    isPopular: true
-  },
-  {
-    id: 102,
-    title: "Gitar Dersi - Yeni Başlayanlar İçin",
-    clubName: "Müzik Kulübü",
-    date: "2026-10-29T18:00:00Z",
-    location: "Müzik Odası 2",
-    image: "music-bg",
-    isPopular: false
-  },
-  {
-    id: 103,
-    title: "Kariyer Günleri: Yazılım Sektörü",
-    clubName: "Kariyer Kulübü",
-    date: "2026-11-02T10:00:00Z",
-    location: "Seminer Salonu A",
-    image: "career-bg",
-    isPopular: true
-  }
-];
-
-const mockClubs = [
-  { id: 1, name: "Teknoloji Kulübü", memberCount: 350, description: "Yazılım, donanım ve yapay zeka tutkunları.", isFeatured: true },
-  { id: 2, name: "Doğa Sporları", memberCount: 220, description: "Kamp, doğa yürüyüşü ve tırmanış etkinlikleri.", isFeatured: true },
-  { id: 3, name: "IEEE", memberCount: 400, description: "Mühendislik hayatına profesyonel bir adım.", isFeatured: true },
-  { id: 4, name: "Tiyatro Topluluğu", memberCount: 150, description: "Sahne sanatlarına gönül verenler bir arada.", isFeatured: false },
-];
+import { discoveryService, type DiscoveryAnnouncement, type DiscoveryCategory } from '../../services/discoveryService';
+import type { Club } from '../../types/club';
+import type { Event } from '../../types/event';
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
+  const [announcements, setAnnouncements] = useState<DiscoveryAnnouncement[]>([]);
+  const [categories, setCategories] = useState<DiscoveryCategory[]>([]);
+  const [popularEvents, setPopularEvents] = useState<Event[]>([]);
+  const [featuredClubs, setFeaturedClubs] = useState<Club[]>([]);
 
   // Sayfa yüklenme efekti (ürün hissi için simulate)
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
+    Promise.all([
+      discoveryService.getAnnouncements(),
+      discoveryService.getCategories(),
+      discoveryService.getPopularEvents(),
+      discoveryService.getPopularClubs(),
+    ])
+      .then(([announcementData, categoryData, eventData, clubData]) => {
+        setAnnouncements(announcementData);
+        setCategories(categoryData);
+        setPopularEvents(eventData);
+        setFeaturedClubs(clubData);
+      })
+      .finally(() => setLoading(false));
   }, []);
+
+  const eventCountByCategory = popularEvents.reduce<Record<string, number>>((acc, event) => {
+    const key = event.category || 'other';
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
 
   if (loading) {
     return (
@@ -164,12 +136,12 @@ export default function HomePage() {
         {/* Sistem Duyuruları */}
         <section>
           <div className="section-title"><span>📢</span> Sistem Duyuruları</div>
-          {mockAnnouncements.length > 0 ? (
+          {announcements.length > 0 ? (
             <div>
-              {mockAnnouncements.map(ann => (
+              {announcements.map(ann => (
                 <div key={ann.id} className="announcement-bar" style={ann.type === 'warning' ? { background: '#fffbeb', borderColor: '#fde68a', color: '#92400e' } : {}}>
-                  <div style={{ flex: 1, fontWeight: 600 }}>{ann.title}</div>
-                  <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{ann.date}</div>
+                  <div style={{ flex: 1, fontWeight: 600 }}>{ann.message}</div>
+                  <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{new Date(ann.createdAt).toLocaleDateString('tr-TR')}</div>
                 </div>
               ))}
             </div>
@@ -182,12 +154,12 @@ export default function HomePage() {
         <section>
           <div className="section-title"><span>📂</span> Kategorileri Keşfet</div>
           <div className="grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-            {mockCategories.map(cat => (
-              <div key={cat.id} className="category-card">
-                <div style={{ fontSize: '2rem' }}>{cat.icon}</div>
+            {categories.map(cat => (
+              <div key={cat.key} className="category-card">
+                <div style={{ fontSize: '2rem' }}>#</div>
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{cat.name}</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{cat.count} Etkinlik</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{cat.label}</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{eventCountByCategory[cat.key] ?? 0} Etkinlik</div>
                 </div>
               </div>
             ))}
@@ -202,15 +174,15 @@ export default function HomePage() {
           </div>
           
           <div className="grid-cards">
-            {mockEvents.filter(e => e.isPopular).map(event => (
-              <div key={event.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            {popularEvents.map(event => (
+              <div key={event.eventId} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ height: '160px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>Görsel</div>
                 <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>{event.clubName}</div>
                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', lineHeight: 1.4 }}>{event.title}</h3>
                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{new Date(event.date).toLocaleDateString('tr-TR')}</span>
-                      <Link to={`/events/${event.id}`} className="btn btn-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>Detaylar</Link>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{new Date(event.eventDate).toLocaleDateString('tr-TR')}</span>
+                      <Link to={`/student/events/${event.eventId}`} className="btn btn-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>Detaylar</Link>
                    </div>
                 </div>
               </div>
@@ -225,7 +197,7 @@ export default function HomePage() {
             <Link to="/clubs" className="btn btn-outline" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>Tüm Topluluklar</Link>
           </div>
           <div className="grid-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
-            {mockClubs.filter(c => c.isFeatured).map(club => (
+            {featuredClubs.map(club => (
               <div key={club.id} className="club-card" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, color: '#94a3b8' }}>
                   {club.name.charAt(0)}

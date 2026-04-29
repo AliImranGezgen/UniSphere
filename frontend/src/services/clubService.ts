@@ -58,3 +58,13 @@ export const getClubRoleAssignments = async (clubId: number): Promise<ClubRoleAs
   const response = await api.get(`clubs/${clubId}/roles`);
   return response.data;
 };
+
+export const joinClub = async (clubId: number): Promise<{ clubId: number; userId: number; status: string; message: string }> => {
+  const response = await api.post(`clubs/${clubId}/join`);
+  return response.data;
+};
+
+export const leaveClub = async (clubId: number): Promise<{ clubId: number; userId: number; status: string; message: string }> => {
+  const response = await api.delete(`clubs/${clubId}/leave`);
+  return response.data;
+};
