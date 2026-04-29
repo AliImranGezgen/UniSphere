@@ -30,7 +30,15 @@ export default function RegisterPage() {
         if (typeof data === 'string') {
           setError(data);
         } else if (data && typeof data === 'object') {
-          setError(data.title || data.message || data.detail || 'Kayıt işlemi başarısız oldu.');
+          if (data.errors && typeof data.errors === 'object') {
+            // Handle ASP.NET Core ValidationProblemDetails
+            const firstErrorKey = Object.keys(data.errors)[0];
+            const firstError = data.errors[firstErrorKey];
+            setError(Array.isArray(firstError) ? firstError[0] : 'Girilen bilgiler eksik veya hatalı.');
+          } else {
+            // Prioritize detail or message over generic title
+            setError(data.detail || data.message || data.title || 'Kayıt işlemi başarısız oldu.');
+          }
         } else {
           setError('Kayıt işlemi başarısız oldu.');
         }
