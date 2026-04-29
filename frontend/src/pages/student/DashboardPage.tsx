@@ -1,7 +1,10 @@
 // UniSphere notu: Dashboard Page ogrenci deneyimindeki ana ekranlardan biridir.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import { Link } from 'react-router-dom';
+import { aiService } from '../../services/aiService';
+import { getEvents } from '../../services/eventService';
+import { getFillCount } from '../pageData';
 
 // Örnek Dummy Veri (Backend modelimizi yansıtacak şekilde)
 const mockRecommendations = [
@@ -40,8 +43,37 @@ const mockRecommendations = [
   }
 ];
 
+type DashboardRecommendation = typeof mockRecommendations[number];
+
 export default function DashboardPage() {
-  const [recommendations] = useState(mockRecommendations);
+  const [recommendations, setRecommendations] = useState<DashboardRecommendation[]>([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getEvents(), aiService.getRecommendations()])
+      .then(([events, aiRecommendations]) => {
+        const mapped = aiRecommendations
+          .map((recommendation) => {
+            const event = events.find((item) => item.eventId === recommendation.eventId);
+            if (!event) return null;
+            return {
+              eventId: event.eventId,
+              title: event.title,
+              clubName: event.clubName,
+              date: event.eventDate,
+              location: event.location,
+              score: recommendation.score,
+              reason: recommendation.reason,
+              capacity: event.capacity,
+              filled: getFillCount(event),
+            };
+          })
+          .filter((item): item is DashboardRecommendation => Boolean(item));
+        setRecommendations(mapped);
+      })
+      .catch(() => setRecommendations([]))
+      .finally(() => setLoadingRecommendations(false));
+  }, []);
 
   // Normalde burada useEffect yapıp backend'in recommendation endpoint'i çağırılır:
   // getRecommendations().then(setRecommendations);
@@ -292,12 +324,19 @@ export default function DashboardPage() {
             </svg>
             Sana Özel Etkinlikler
           </h2>
-          <Link to="/events" style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}>
+          <Link to="/student/recommended" style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}>
             Tümünü Gör &rarr;
           </Link>
         </div>
 
         <div className="rec-grid">
+          {loadingRecommendations ? <div className="rec-card">AI önerileri yükleniyor...</div> : null}
+          {!loadingRecommendations && recommendations.length === 0 ? (
+            <div className="rec-card">
+              <h3 className="rec-card__title">Henüz kişisel öneri yok</h3>
+              <p className="rec-reason">Etkinliklere başvurdukça öneriler daha görünür hale gelecek.</p>
+            </div>
+          ) : null}
           {recommendations.map(rec => {
             // Kontenjan hesabı
             const percent = (rec.filled / rec.capacity) * 100;
@@ -363,8 +402,8 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="acc-actions">
-                  <button className="btn-view">Detaylar</button>
-                  <button className="btn-apply">Hemen Başvur</button>
+                  <Link className="btn-view" to={`/student/events/${rec.eventId}`} style={{ textAlign: 'center', textDecoration: 'none' }}>Detaylar</Link>
+                  <Link className="btn-apply" to={`/student/events/${rec.eventId}`} style={{ textAlign: 'center', textDecoration: 'none' }}>Hemen Başvur</Link>
                 </div>
               </div>
             );

@@ -70,6 +70,47 @@ public class AITestController : ControllerBase
         return Ok(result);
     }
 
+    // 3. Faz: Kulüp panelinde liste görünümü için no-show risk contract endpoint'i.
+    [HttpGet("no-show-risks")]
+    public IActionResult GetNoShowRisks()
+    {
+        var risks = new[]
+        {
+            new
+            {
+                UserId = 1,
+                EventId = 1,
+                StudentName = "Öğrenci #1",
+                EventTitle = "AI ve Gelecek Zirvesi",
+                RiskLevel = "Medium",
+                RiskScore = 0.57,
+                Reason = "Geçmiş katılım örüntüsüne göre orta seviye no-show riski."
+            },
+            new
+            {
+                UserId = 2,
+                EventId = 1,
+                StudentName = "Öğrenci #2",
+                EventTitle = "AI ve Gelecek Zirvesi",
+                RiskLevel = "Low",
+                RiskScore = 0.22,
+                Reason = "Son etkinliklerde düzenli check-in davranışı var."
+            },
+            new
+            {
+                UserId = 3,
+                EventId = 2,
+                StudentName = "Öğrenci #3",
+                EventTitle = "Kariyer Atölyesi",
+                RiskLevel = "High",
+                RiskScore = 0.81,
+                Reason = "Onaylanmış son etkinliklerde check-in yapılmamış."
+            }
+        };
+
+        return Ok(risks);
+    }
+
     // 3. Faz: No-show risk tahmini için mock contract endpoint'i.
     [HttpPost("predict-noshow")]
     public IActionResult PredictNoShow([FromBody] NoShowPredictionRequestDto request)
@@ -98,6 +139,39 @@ public class AITestController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    // 3. Faz: Sistem admin moderasyon ekranını besleyen şüpheli yorum contract endpoint'i.
+    [HttpGet("suspicious-reviews")]
+    public IActionResult GetSuspiciousReviews()
+    {
+        var reviews = new[]
+        {
+            new
+            {
+                ReviewId = 1,
+                EventTitle = "AI ve Gelecek Zirvesi",
+                ReviewerName = "Öğrenci #1",
+                Rating = 1,
+                Comment = "Aynı yorum aynı yorum aynı yorum",
+                CreatedAt = DateTime.UtcNow.AddHours(-2),
+                RiskLevel = "Medium",
+                Reason = "Tekrar eden ifade yapısı nedeniyle inceleme önerildi."
+            },
+            new
+            {
+                ReviewId = 2,
+                EventTitle = "Kariyer Atölyesi",
+                ReviewerName = "Öğrenci #2",
+                Rating = 5,
+                Comment = "Kısa ve belirsiz yorum",
+                CreatedAt = DateTime.UtcNow.AddHours(-1),
+                RiskLevel = "Low",
+                Reason = "Düşük riskli, ancak yorum içeriği kısa olduğu için listelendi."
+            }
+        };
+
+        return Ok(reviews);
     }
 
     // 3. Faz: Etkinlik açıklaması iyileştirme için mock contract endpoint'i.
