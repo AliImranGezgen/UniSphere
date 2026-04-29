@@ -19,8 +19,23 @@ export default function LoginPage() {
     try {
       // Backend'e giriş isteği gönder
       await authService.login({ email, password });
-      // Başarılıysa dashboard'a yönlendir
-      navigate('/student/dashboard');
+      
+      try {
+        // Kullanıcı rolünü alıp ona göre yönlendirme yap
+        const profile = await authService.getProfile();
+        const role = profile.role?.toLowerCase() || '';
+        
+        if (role === 'systemadmin' || role === 'system_admin') {
+          navigate('/system-admin/dashboard');
+        } else {
+          // Öğrenci ve Kulüp Yöneticisi öğrenci paneline yönlendirilir
+          // Kulüp Yöneticileri, Navbar'da çıkacak buton ile Kulüp Yönetimi'ne geçebilirler
+          navigate('/student/dashboard');
+        }
+      } catch (profileErr) {
+        // Profil alınamazsa varsayılan olarak öğrenciye yönlendir
+        navigate('/student/dashboard');
+      }
     } catch (err) {
       // Hata durumunda backend'den gelen mesajı göster
       if (axios.isAxiosError(err) && err.response) {
