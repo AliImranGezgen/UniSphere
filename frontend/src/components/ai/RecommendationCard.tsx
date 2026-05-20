@@ -17,7 +17,7 @@ export default function RecommendationCard({ recommendation, event }: Props) {
           <span className="chip">{event.clubName || `Kulüp #${event.clubId}`}</span>
           <h2 className="panel-card__title" style={{ marginTop: 10 }}>{event.title}</h2>
         </div>
-        <span className="status-pill status-pill--good">{Math.round(recommendation.score * 100)}% eşleşme</span>
+        <span className="status-pill status-pill--good">{Math.round(recommendation.score)}% eşleşme</span>
       </div>
       <p className="panel-card__text">
         <strong>Neden önerildi?</strong><br />

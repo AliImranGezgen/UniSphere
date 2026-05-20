@@ -4,5 +4,5 @@ namespace UniSphere.Core.AI.Interfaces;
 
 public interface IRecommendationService
 {
-    List<RecommendationResultDto> GetRecommendations(RecommendationRequestDto request);
+    Task<List<RecommendationResultDto>> GetRecommendationsAsync(RecommendationRequestDto request);
 }

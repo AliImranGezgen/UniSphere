@@ -14,7 +14,7 @@ import type {
 
 export const aiService = {
   getRecommendations: async (): Promise<RecommendationResult[]> => {
-    const response = await api.get<RecommendationResult[]>('ai/recommend');
+    const response = await api.get<RecommendationResult[]>('ai/recommendations/me');
     return response.data;
   },
 

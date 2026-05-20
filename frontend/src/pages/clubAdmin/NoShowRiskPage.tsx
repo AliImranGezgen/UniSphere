@@ -46,7 +46,7 @@ export default function NoShowRiskPage() {
                   <td>{item.studentName}</td>
                   <td>{item.eventTitle}</td>
                   <td><NoShowRiskBadge level={item.riskLevel} /></td>
-                  <td>{Math.round(item.riskScore * 100)}%</td>
+                  <td>{Math.round(item.riskScore)}%</td>
                   <td>{item.reason}</td>
                 </tr>
               ))}

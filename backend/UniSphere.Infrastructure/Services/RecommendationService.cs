@@ -1,7 +1,8 @@
-using UniSphere.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using UniSphere.Core.AI.DTOs;
 using UniSphere.Core.AI.Interfaces;
 using UniSphere.Core.Entities;
+using UniSphere.Infrastructure.Data;
 
 namespace UniSphere.Infrastructure.Services;
 
@@ -14,42 +15,29 @@ public class RecommendationService : IRecommendationService
         _context = context;
     }
 
-    public List<RecommendationResultDto> GetRecommendations(RecommendationRequestDto request)
+    public async Task<List<RecommendationResultDto>> GetRecommendationsAsync(RecommendationRequestDto request)
     {
-        var results = new List<RecommendationResultDto>();
+        var now = DateTime.UtcNow;
 
-        // Tüm etkinlikleri veritabanından alıyoruz.
-        var events = _context.Events.ToList();
-
-        // 1. Application Geçmişi
-        var userApplications = _context.Applications
+        var userApplications = await _context.Applications
+            .AsNoTracking()
+            .Include(x => x.Event)
             .Where(x => x.UserId == request.UserId)
-            .ToList();
+            .ToListAsync();
 
         var appliedEventIds = userApplications.Select(x => x.EventId).ToHashSet();
-
-        // 2. Check-in Geçmişi
         var checkedInEventIds = userApplications
             .Where(x => x.Status == ApplicationStatus.CheckedIn)
             .Select(x => x.EventId)
             .ToHashSet();
 
-        // 3. Review Geçmişi
-        var userReviews = _context.Reviews
-            .Where(x => x.UserId == request.UserId)
-            .ToList();
-
-        // Profil çıkarmak için geçmiş etkinlikleri alıyoruz
-        var attendedOrApprovedEventIds = userApplications
-            .Where(x => x.Status == ApplicationStatus.Approved || x.Status == ApplicationStatus.CheckedIn)
-            .Select(x => x.EventId)
-            .ToList();
-
-        var historyEvents = _context.Events
-            .Where(e => attendedOrApprovedEventIds.Contains(e.Id))
+        var historyEvents = userApplications
+            .Where(x => x.Event != null && (x.Status == ApplicationStatus.Approved || x.Status == ApplicationStatus.CheckedIn))
+            .Select(x => x.Event)
             .ToList();
 
         var topCategories = historyEvents
+            .Where(e => !string.IsNullOrWhiteSpace(e.Category))
             .GroupBy(e => e.Category)
             .OrderByDescending(g => g.Count())
             .Select(g => g.Key)
@@ -61,107 +49,140 @@ public class RecommendationService : IRecommendationService
             .Select(g => g.Key)
             .ToList();
 
-        foreach (var ev in events)
+        var userReviews = await _context.Reviews
+            .AsNoTracking()
+            .Where(x => x.UserId == request.UserId)
+            .ToListAsync();
+
+        var memberClubIds = await _context.ClubMemberships
+            .AsNoTracking()
+            .Where(x => x.UserId == request.UserId && x.Status == "Active")
+            .Select(x => x.ClubId)
+            .ToListAsync();
+
+        var upcomingEvents = await _context.Events
+            .AsNoTracking()
+            .Include(e => e.Club)
+            .Where(e => !appliedEventIds.Contains(e.Id))
+            .ToListAsync();
+
+        var results = new List<RecommendationResultDto>();
+
+        foreach (var ev in upcomingEvents.Where(e => e.EventDate >= now))
         {
-            // Kullanıcının daha önce başvurduğu etkinlikleri önerme. İleri tarihli olmayanları önerme.
-            if (ev.EventDate < DateTime.UtcNow) continue;
-            if (appliedEventIds.Contains(ev.Id)) continue;
-            
-            double score = 0;
-            var reasons = new List<string>();
+            var score = 0d;
+            var explanations = new List<AIExplanationDto>();
 
-            // --- SKORLAMA MANTIĞI (Kural Tabanlı Hibrit Ön Hazırlık) ---
-
-            // Kural 1: Kategori / Kulüp (Application Geşmişi Etkisi)
-            if (topCategories.Contains(ev.Category))
+            if (!string.IsNullOrWhiteSpace(ev.Category) && topCategories.Contains(ev.Category))
             {
-                var categoryRank = topCategories.IndexOf(ev.Category);
-                if (categoryRank == 0)
+                var rank = topCategories.IndexOf(ev.Category);
+                var weight = rank == 0 ? 30 : 15;
+                score += weight;
+                explanations.Add(new AIExplanationDto
                 {
-                    score += 0.3;
-                    reasons.Add("En çok katıldığınız kategori.");
-                }
-                else
-                {
-                    score += 0.15;
-                    reasons.Add("İlgi alanınıza uygun.");
-                }
+                    Code = rank == 0 ? "top_category" : "matched_category",
+                    Message = rank == 0
+                        ? "En cok katildigin kategoriyle eslesiyor."
+                        : "Gecmis etkinlik ilgilerine yakin bir kategori.",
+                    Weight = weight
+                });
             }
 
-            // Kural 2: Kulüp & Check-in Geçmişi
             if (topClubs.Contains(ev.ClubId))
             {
-                var checkInsForThisClub = historyEvents.Count(he => he.ClubId == ev.ClubId && checkedInEventIds.Contains(he.Id));
-                if (checkInsForThisClub > 0)
+                var checkInsForClub = historyEvents.Count(x => x.ClubId == ev.ClubId && checkedInEventIds.Contains(x.Id));
+                var weight = checkInsForClub > 0 ? 35 : 20;
+                score += weight;
+                explanations.Add(new AIExplanationDto
                 {
-                    score += 0.35; // Check-in yapmış olması skoru yükseltir
-                    reasons.Add("Etkinliklerine düzenli katıldığınız bir kulüp.");
-                }
-                else
-                {
-                    score += 0.2;
-                    reasons.Add("Takip ettiğiniz kulübün etkinliği.");
-                }
+                    Code = checkInsForClub > 0 ? "attended_club" : "known_club",
+                    Message = checkInsForClub > 0
+                        ? "Bu kulubun etkinliklerine daha once check-in yaptin."
+                        : "Daha once ilgi gosterdigin bir kulubun etkinligi.",
+                    Weight = weight
+                });
             }
 
-            // Kural 3: Review Geçmişi
-            var reviewsForThisCategory = userReviews
+            if (memberClubIds.Contains(ev.ClubId))
+            {
+                score += 15;
+                explanations.Add(new AIExplanationDto
+                {
+                    Code = "club_membership",
+                    Message = "Uyesi oldugun kulubun etkinligi.",
+                    Weight = 15
+                });
+            }
+
+            var reviewsForCategory = userReviews
                 .Where(r => historyEvents.Any(he => he.Id == r.EventId && he.Category == ev.Category))
                 .ToList();
 
-            if (reviewsForThisCategory.Any())
+            if (reviewsForCategory.Count > 0)
             {
-                var avgRating = reviewsForThisCategory.Average(r => r.Rating);
-                if (avgRating >= 4.0)
+                var avgRating = reviewsForCategory.Average(r => r.Rating);
+                if (avgRating >= 4)
                 {
-                    score += 0.2;
-                    reasons.Add("Bu tür etkinliklere daha önce yüksek puan verdiniz.");
+                    score += 20;
+                    explanations.Add(new AIExplanationDto
+                    {
+                        Code = "high_rating_category",
+                        Message = "Bu tur etkinliklere daha once yuksek puan verdin.",
+                        Weight = 20
+                    });
                 }
-                else if (avgRating <= 2.0)
+                else if (avgRating <= 2)
                 {
-                    // Düşük puanlı kategorilerden kaçınma cezası
-                    score -= 0.3;
-                    reasons.Add("Daha önce bu kategoride düşük puan verdiğiniz için öncelik düşürüldü.");
+                    score -= 20;
+                    explanations.Add(new AIExplanationDto
+                    {
+                        Code = "low_rating_category",
+                        Message = "Bu kategoride gecmis puanlarin dusuk oldugu icin oncelik azaltildi.",
+                        Weight = -20
+                    });
                 }
             }
 
-            // İlgi alanları (Request üzerinden geldiyse)
             if (request.InterestedCategories.Contains(ev.Category))
             {
-                score += 0.2;
-                reasons.Add("Profilinizdeki ilgi alanlarıyla eşleşiyor.");
-            }
-
-            // Normalizasyon (0 ile 1 arasına sabitleme)
-            score = Math.Max(score, 0);
-            score = Math.Min(score, 1.0);
-
-            // Sadece skoru olan etkinlikleri dahil edelim
-            if (score > 0)
-            {
-                var explainability = string.Join(" ", reasons);
-                if (string.IsNullOrWhiteSpace(explainability))
+                score += 20;
+                explanations.Add(new AIExplanationDto
                 {
-                    explainability = "Sizin için öneriliyor.";
-                }
-
-                results.Add(new RecommendationResultDto
-                {
-                    EventId = ev.Id,
-                    Score = Math.Round(score, 2),
-                    Reason = explainability, // Explainability eklendi
-                    RiskLevel = "N/A", // Risk tahminini modül dışında tuttuk
-                    Meta = new AIResponseMetaDto
-                    {
-                        Model = "recommendation-hybrid-v2"
-                    }
+                    Code = "profile_interest",
+                    Message = "Profil ilgi alanlarinla eslesiyor.",
+                    Weight = 20
                 });
             }
+
+            score = Math.Clamp(score, 0, 100);
+            if (score <= 0)
+            {
+                continue;
+            }
+
+            var reason = string.Join(" ", explanations.Select(x => x.Message));
+
+            results.Add(new RecommendationResultDto
+            {
+                EventId = ev.Id,
+                EventTitle = ev.Name,
+                ClubName = ev.Club?.Name ?? string.Empty,
+                Score = Math.Round(score, 2),
+                Reason = string.IsNullOrWhiteSpace(reason) ? "Kampus etkinlik gecmisine gore one cikarildi." : reason,
+                Explanations = explanations,
+                Meta = new AIResponseMetaDto
+                {
+                    Model = "recommendation-rule-based",
+                    Version = "v1",
+                    GeneratedAt = now,
+                    IsDecisionSupportOnly = false
+                }
+            });
         }
 
-        // Skorlara göre sırala ve ilk 5'i döndür
         return results
             .OrderByDescending(x => x.Score)
+            .ThenBy(x => x.EventTitle)
             .Take(5)
             .ToList();
     }
