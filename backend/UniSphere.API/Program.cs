@@ -61,6 +61,10 @@ if (string.IsNullOrWhiteSpace(jwtKey))
 
 // Secret Key'i (Gizli Anahtar) byte dizisine dönüştürüyoruz (JWT doğrulamasında kullanılacak)
 var key = Encoding.UTF8.GetBytes(jwtKey);
+if (key.Length < 16)
+{
+    throw new InvalidOperationException("JWT Key must be at least 16 characters for HS256. Check Jwt:Key or Jwt__Key/JWT_KEY environment variables.");
+}
 
 // Sistemdeki Kimlik Doğrulama (Authentication) mekanizmasını ayarlıyoruz
 builder.Services.AddAuthentication(options =>

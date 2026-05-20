@@ -27,10 +27,19 @@ public class TokenService
             new Claim(ClaimTypes.Role, user.Role)
         };
 
-        // JWT key
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
-        );
+        var jwtKey = _configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            throw new InvalidOperationException("JWT Key is missing. Check Jwt:Key configuration.");
+        }
+
+        var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+        if (keyBytes.Length < 16)
+        {
+            throw new InvalidOperationException("JWT Key must be at least 16 characters for HS256. Check Jwt:Key or Jwt__Key/JWT_KEY environment variables.");
+        }
+
+        var key = new SymmetricSecurityKey(keyBytes);
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
