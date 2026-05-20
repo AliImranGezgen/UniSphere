@@ -1,99 +1,80 @@
-# 🗺️ UniSphere Deployment Topolojisi
+# UniSphere Deployment Topolojisi
 
-![UniSphere Sistem Mimarisi](./mimari_2.png)
+Bu proje production ortaminda Docker Compose ile VPS uzerinde calisir. GitHub Actions `main` branch'e push geldiginde VPS'e SSH ile baglanir, repoyu gunceller, `.env` dosyasini GitHub Secrets degerlerinden uretir ve container'lari yeniden ayaga kaldirir.
 
-Bu belge, UniSphere projesinin canlı sunucu (Production) üzerindeki ağ mimarisini, port yapılandırmalarını ve veri akışını açıklamaktadır. Proje Docker konteynerleri üzerinden çalışmaktadır.
+## Public Portlar
 
----
+- Frontend: `http://<sunucu_ip>:3000`
+- Backend API: `http://<sunucu_ip>:8085`
+- PostgreSQL: host tarafinda yalnizca `127.0.0.1:5432` olarak publish edilir.
 
-## 1. Port Haritası (Public ve Container İçi Portlar)
+## Container Ici Servisler
 
-Sistemdeki servislerin dış dünyaya açık olan (Public) ve Docker iç ağına özel portları aşağıdaki gibidir:
+- `frontend`: Nginx, container port `80`
+- `unisphere_api`: ASP.NET Core API, container port `8080`
+- `db`: PostgreSQL, container port `5432`
 
-### Frontend (unisphere_web)
+## Istek Akisi
 
-- **Public Port:** `3000`
-- **Container Port:** `80` (Nginx static file server)
-
-### Backend API (unisphere_api)
-
-- **Public Port:** `8080`
-- **Container Port:** `8080` (.NET Kestrel server)
-
-### Database (unisphere_db)
-
-- **Public Port:** `5432` ⚠️ (şu an dışarı açık)
-- **Container Port:** `5432` (PostgreSQL)
-
-> ⚠️ Production ortamında güvenlik için database portunun dışarıya kapatılması önerilir.
-
----
-
-## 2. İstek Akışı (Frontend → Backend → Database)
-
-Kullanıcının tarayıcısından başlayan veri akışı şu şekildedir:
-
-1. **Kullanıcı Girişi** Kullanıcı `http://<sunucu_ip>:3000` adresine erişir.
-
-2. **Frontend Sunumu** İstek, frontend container içindeki Nginx’e (port 80) ulaşır ve React uygulaması yüklenir.
-
-3. **API İsteği** Frontend uygulaması backend’e doğrudan HTTP isteği gönderir:  
-   `http://<sunucu_ip>:8080/api/...`
-
-4. **Backend İşlemi** Backend isteği işler ve veritabanına bağlanır.
-
-5. **Database Erişimi** Backend, Docker internal network üzerinden şu bağlantıyı kullanır:
+Tarayici once frontend container'ina gider:
 
 ```text
-Host=db
-Port=5432
+Browser -> http://<sunucu_ip>:3000
 ```
 
----
-
-## 3. Docker Network Yapısı
-
-Tüm servisler aynı Docker ağı üzerinde çalışmaktadır.
-Servisler birbirine container adı ile erişir:
-
-- **Backend** → `db:5432`
-- **Frontend** → backend’e public URL üzerinden erişir
-
-Bu yapı sayesinde servisler IP yerine servis adıyla haberleşir.
-
----
-
-## 4. Nginx ve Reverse Proxy Durumu
-
-Sistemde host seviyesinde merkezi bir reverse proxy (Nginx) bulunmamaktadır.
-Trafik doğrudan container portlarına yönlenmektedir:
-
-- **Frontend** → `:3000`
-- **Backend** → `:8080`
-
-**Container içi Nginx:** Frontend container içinde bir Nginx bulunmaktadır. Bu Nginx:
-
-- React build dosyalarını sunar
-- SPA routing için `try_files` kullanır
-
-> **Önemli:** `/api` routing için merkezi proxy yoktur. Frontend backend’e doğrudan istek atar.
-
----
-
-## 5. Genel Sistem Akışı
+React uygulamasinin API istekleri relative `/api` adresine gider. Bu istekleri frontend container icindeki Nginx backend container'a proxy eder:
 
 ```text
-[Browser]
-   |
-   | :3000
-   v
-[Frontend (Nginx)]
-   |
-   | HTTP
-   v
-[Backend (.NET API)]
-   |
-   | TCP (Docker Network)
-   v
-[PostgreSQL]
+Browser
+  -> frontend Nginx :3000
+  -> /api proxy
+  -> unisphere_api:8080
+  -> db:5432
 ```
+
+Bu nedenle tarayicida Nginx'in 50x HTML sayfasi gorulurse problem genelde frontend'in backend container'a ulasamamasidir. Ilk bakilacak yerler:
+
+```bash
+docker compose ps
+docker compose logs --tail=120 unisphere_api
+docker compose logs --tail=80 frontend
+docker compose config
+```
+
+## GitHub Secrets
+
+Deployment workflow icin zorunlu secret'lar:
+
+- `SERVER_IP`
+- `SERVER_USER`
+- `SERVER_PASSWORD`
+
+Asagidaki secret'lar opsiyoneldir. GitHub Secrets icinde yoksa workflow guvenli fallback degerlerle VPS uzerinde `.env` dosyasini uretir:
+
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `JWT_KEY`
+- `JWT_ISSUER`
+- `JWT_AUDIENCE`
+- `JWT_EXPIRE_MINUTES`
+
+`JWT_KEY` HS256 icin en az 16 karakter olmalidir. Ornek:
+
+```text
+BuCokGizliVeUzunBirSifreOlmali123456!
+```
+
+## Deploy Sirasinda Yapilan Kontroller
+
+Workflow su sirayla calisir:
+
+1. VPS'te repo `origin/main` ile senkronlanir.
+2. GitHub Secrets degerlerinden VPS'te `.env` uretilir.
+3. `docker compose config` ile compose dosyasi dogrulanir.
+4. Image'lar build edilir.
+5. Once `db`, sonra `unisphere_api`, sonra `frontend` ayaga kaldirilir.
+6. Backend `healthy` olana kadar beklenir.
+7. Frontend Nginx icinden `/api/Event` proxy kontrolu yapilir.
+
+Bu akista backend saglikli degilse deploy fail olur ve workflow loglarinda backend/frontend loglari gorunur.
