@@ -43,7 +43,7 @@ export default function LoginPage() {
         if (typeof data === 'string') {
           setError(data);
         } else if (data && typeof data === 'object') {
-          setError(data.title || data.message || data.detail || 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
+          setError(data.detail || data.message || data.title || 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
         } else {
           setError('Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.');
         }
