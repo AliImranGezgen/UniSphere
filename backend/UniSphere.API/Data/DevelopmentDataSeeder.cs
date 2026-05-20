@@ -7,18 +7,33 @@ public static class DevelopmentDataSeeder
 {
     public static void Seed(AppDbContext db)
     {
-        if (db.Users.Any(u => u.Email == "student@unisphere.test"))
+        var now = DateTime.UtcNow;
+        const string password = "Test123!";
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+
+        var existingTestUsers = db.Users
+            .Where(u =>
+                u.Email == "student@unisphere.test" ||
+                u.Email == "student2@unisphere.test" ||
+                u.Email == "clubadmin@unisphere.test" ||
+                u.Email == "admin@unisphere.test")
+            .ToList();
+
+        if (existingTestUsers.Any(u => u.Email == "student@unisphere.test"))
         {
+            foreach (var user in existingTestUsers)
+            {
+                user.PasswordHash = passwordHash;
+            }
+
+            db.SaveChanges();
             return;
         }
 
-        var now = DateTime.UtcNow;
-        const string password = "Test123!";
-
-        var student = new User { Name = "Ayse Demir", Email = "student@unisphere.test", PasswordHash = BCrypt.Net.BCrypt.HashPassword(password), Role = UserRoles.Student, CreatedAt = now.AddDays(-80) };
-        var secondStudent = new User { Name = "Mehmet Kaya", Email = "student2@unisphere.test", PasswordHash = BCrypt.Net.BCrypt.HashPassword(password), Role = UserRoles.Student, CreatedAt = now.AddDays(-70) };
-        var clubAdmin = new User { Name = "Ece Yilmaz", Email = "clubadmin@unisphere.test", PasswordHash = BCrypt.Net.BCrypt.HashPassword(password), Role = UserRoles.ClubAdmin, CreatedAt = now.AddDays(-90) };
-        var systemAdmin = new User { Name = "Admin User", Email = "admin@unisphere.test", PasswordHash = BCrypt.Net.BCrypt.HashPassword(password), Role = UserRoles.SystemAdmin, CreatedAt = now.AddDays(-100) };
+        var student = new User { Name = "Ayse Demir", Email = "student@unisphere.test", PasswordHash = passwordHash, Role = UserRoles.Student, CreatedAt = now.AddDays(-80) };
+        var secondStudent = new User { Name = "Mehmet Kaya", Email = "student2@unisphere.test", PasswordHash = passwordHash, Role = UserRoles.Student, CreatedAt = now.AddDays(-70) };
+        var clubAdmin = new User { Name = "Ece Yilmaz", Email = "clubadmin@unisphere.test", PasswordHash = passwordHash, Role = UserRoles.ClubAdmin, CreatedAt = now.AddDays(-90) };
+        var systemAdmin = new User { Name = "Admin User", Email = "admin@unisphere.test", PasswordHash = passwordHash, Role = UserRoles.SystemAdmin, CreatedAt = now.AddDays(-100) };
 
         db.Users.AddRange(student, secondStudent, clubAdmin, systemAdmin);
         db.SaveChanges();
