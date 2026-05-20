@@ -2,9 +2,8 @@ namespace UniSphere.Core.AI.DTOs;
 
 public class AIResponseMetaDto
 {
-    // Hangi model veya sürüm tarafından üretildiğini belirtir.
     public string Model { get; set; } = "rule-based-v1";
-
-    // Yanıtın üretildiği zamanı UTC olarak saklar.
+    public string Version { get; set; } = "v1";
     public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
+    public bool IsDecisionSupportOnly { get; set; } = true;
 }

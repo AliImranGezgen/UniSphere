@@ -10,6 +10,7 @@ using UniSphere.Core.AI.Interfaces;
 using UniSphere.Infrastructure.Repositories;
 using UniSphere.Infrastructure.Services;
 using UniSphere.API.Authorization;
+using UniSphere.API.Data;
 using Microsoft.AspNetCore.Authorization;
 using UniSphere.Core.Entities;
 
@@ -151,6 +152,8 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Veritabanı bekleyen migrationlar kontrol ediliyor... (Deneme {RetryCount}/{MaxRetryCount})", retries + 1, maxRetryCount);
             db.Database.Migrate();
             logger.LogInformation("Veritabanı migration'ları başarıyla uygulandı veya güncel durumda.");
+            DevelopmentDataSeeder.Seed(db);
+            logger.LogInformation("Geliştirme seed verisi kontrol edildi.");
             break;
         }
         catch (Exception ex)

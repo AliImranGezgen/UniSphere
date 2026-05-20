@@ -3,14 +3,24 @@ export type AiRiskLevel = 'Low' | 'Medium' | 'High';
 
 export interface AiResponseMeta {
   model: string;
+  version?: string;
   generatedAt?: string;
+  isDecisionSupportOnly?: boolean;
+}
+
+export interface AiExplanation {
+  code: string;
+  message: string;
+  weight?: number;
 }
 
 export interface RecommendationResult {
   eventId: number;
+  eventTitle?: string;
+  clubName?: string;
   score: number;
   reason: string;
-  riskLevel?: string;
+  explanations?: AiExplanation[];
   meta?: AiResponseMeta;
 }
 
@@ -32,6 +42,7 @@ export interface NoShowPrediction {
   riskLevel: AiRiskLevel;
   riskScore: number;
   reason: string;
+  explanations?: AiExplanation[];
 }
 
 export interface NoShowRiskItem extends NoShowPrediction {
