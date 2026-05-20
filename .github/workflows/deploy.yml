@@ -65,6 +65,7 @@ jobs:
             echo "7. Servisler dependency sirasiyla ayaga kaldiriliyor..."
             docker compose up -d db
             docker compose up -d unisphere_api
+            docker compose up -d frontend
 
             echo "8. Backend saglik kontrolu bekleniyor..."
             for i in $(seq 1 30); do
@@ -82,31 +83,27 @@ jobs:
               sleep 5
             done
 
-            echo "9. Frontend backend'den sonra yeniden olusturuluyor..."
-            docker compose up -d --force-recreate frontend
-            sleep 3
-
-            echo "10. Frontend Nginx /api proxy kontrolu..."
-            docker compose exec -T frontend wget -qO- http://127.0.0.1/api/Event >/tmp/unisphere-api-proxy-check.txt || {
+            echo "9. Frontend Nginx /api proxy kontrolu..."
+            docker compose exec -T frontend wget -qO- http://localhost/api/Event >/tmp/unisphere-api-proxy-check.txt || {
               echo "Frontend Nginx /api proxy backend'e ulasamiyor. Son loglar:"
               docker compose logs --tail=80 frontend || true
               docker compose logs --tail=120 unisphere_api || true
               exit 1
             }
 
-            echo "11. Orphan / kullanilmayan container temizligi..."
+            echo "10. Orphan / kullanilmayan container temizligi..."
             docker container prune -f
 
-            echo "12. Konteyner durumlari:"
+            echo "11. Konteyner durumlari:"
             docker ps
 
-            echo "13. Frontend loglari:"
+            echo "12. Frontend loglari:"
             docker compose logs --tail=30 frontend || true
 
-            echo "14. Backend loglari:"
+            echo "13. Backend loglari:"
             docker compose logs --tail=30 unisphere_api || true
 
-            echo "15. Kullanilmayan image temizligi:"
+            echo "14. Kullanilmayan image temizligi:"
             docker image prune -f
 
             echo "--- DAGITIM BASARIYLA TAMAMLANDI ---"
