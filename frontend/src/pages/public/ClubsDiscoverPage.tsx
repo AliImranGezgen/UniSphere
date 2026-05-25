@@ -50,9 +50,9 @@ function ClubCard({ club, activeEvents, onJoin }: { club: Club; activeEvents: nu
         <button className="btn btn-primary ev-card__btn" onClick={() => onJoin(club)}>
           {authService.isAuthenticated() ? 'Kulübe Katıl' : 'Giriş Yap ve Kulübe Katıl'}
         </button>
-        <button className="btn btn-outline ev-card__btn--detail">
+        <Link to={`/clubs/${club.id}`} className="btn btn-outline ev-card__btn--detail" style={{ textDecoration: 'none' }}>
           Detay
-        </button>
+        </Link>
       </div>
     </div>
   );

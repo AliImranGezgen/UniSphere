@@ -12,6 +12,7 @@ export interface UserListItem {
   name: string;
   email: string;
   role: string;
+  createdAt?: string;
 }
 
 export interface AuthResponse {

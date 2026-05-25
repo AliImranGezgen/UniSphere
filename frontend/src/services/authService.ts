@@ -1,6 +1,6 @@
 // UniSphere notu: Auth Service API cagrilarini tek noktadan yonetmek icin ayrildi.
 import { api } from './api';
-import type { LoginCredentials, RegisterData, AuthResponse, User } from '../types/auth';
+import type { LoginCredentials, RegisterData, AuthResponse, User, UserListItem } from '../types/auth';
 
 export const authService = {
   // Kullanıcı girişi: Credentials alır, başarılıysa token döner ve localStorage'a kaydeder.
@@ -39,8 +39,8 @@ export const authService = {
   },
 
   // Tüm kullanıcıları getir (Admin için)
-  getAllUsers: async (): Promise<User[]> => {
-    const response = await api.get<User[]>('auth/users');
+  getAllUsers: async (): Promise<UserListItem[]> => {
+    const response = await api.get<UserListItem[]>('auth/users');
     return response.data;
   }
 };

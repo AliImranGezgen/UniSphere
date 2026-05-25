@@ -33,7 +33,16 @@ public class ClubRoleService : IClubRoleService
         if (currentPresident != null)
         {
             if (currentPresident.UserId == userId)
+            {
+                if (user.Role != UserRoles.ClubAdmin)
+                {
+                    user.Role = UserRoles.ClubAdmin;
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+
                 return true;
+            }
             
             // Eğer farklı kişiyse, eski başkanı üye konumuna çekebiliriz (Veya silebiliriz. Biz burada siliyoruz)
             _context.ClubRoleAssignments.Remove(currentPresident);
@@ -59,7 +68,11 @@ public class ClubRoleService : IClubRoleService
 
         await _context.ClubRoleAssignments.AddAsync(newPresidentAssignment);
         
-        // İsteğe bağlı olarak Club entity'sinin ManagerId propertisini de geriye dönük uyumluluk için güncelleyebiliriz
+        // Panel visibility and role-protected API operations depend on the global role.
+        user.Role = UserRoles.ClubAdmin;
+        _context.Users.Update(user);
+
+        // Keep the legacy manager link aligned for event ownership checks.
         club.ManagerId = userId;
         _context.Clubs.Update(club);
 
@@ -111,6 +124,19 @@ public class ClubRoleService : IClubRoleService
         };
 
         await _context.ClubRoleAssignments.AddAsync(newAssignment);
+
+        if (role == ClubRoles.VicePresident || role == ClubRoles.EventManager)
+        {
+            var targetUser = await _context.Users.FindAsync(targetUserId);
+            if (targetUser == null)
+            {
+                throw new InvalidOperationException("Rol atanacak kullanici bulunamadi.");
+            }
+
+            targetUser.Role = UserRoles.ClubAdmin;
+            _context.Users.Update(targetUser);
+        }
+
         await _context.SaveChangesAsync();
 
         return true;
