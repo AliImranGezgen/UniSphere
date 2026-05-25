@@ -71,6 +71,18 @@ public class AuthController : ControllerBase
             return Unauthorized("E-posta veya şifre hatalı");
         }
 
+        var hasClubManagementRole = _context.ClubRoleAssignments.Any(assignment =>
+            assignment.UserId == user.Id &&
+            (assignment.Role == ClubRoles.President ||
+             assignment.Role == ClubRoles.VicePresident ||
+             assignment.Role == ClubRoles.EventManager));
+
+        if (hasClubManagementRole && user.Role == UserRoles.Student)
+        {
+            user.Role = UserRoles.ClubAdmin;
+            _context.SaveChanges();
+        }
+
         var token = _tokenService.CreateToken(user);
 
         return Ok(new

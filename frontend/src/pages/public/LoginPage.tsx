@@ -27,9 +27,9 @@ export default function LoginPage() {
         
         if (role === 'systemadmin' || role === 'system_admin') {
           navigate('/system-admin/dashboard');
+        } else if (role === 'clubadmin' || role === 'club_admin') {
+          navigate('/club-admin/dashboard');
         } else {
-          // Öğrenci ve Kulüp Yöneticisi öğrenci paneline yönlendirilir
-          // Kulüp Yöneticileri, Navbar'da çıkacak buton ile Kulüp Yönetimi'ne geçebilirler
           navigate('/student/dashboard');
         }
       } catch (profileErr) {

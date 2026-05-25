@@ -8,6 +8,7 @@ import type {
   NoShowResult,
   NoShowRiskItem,
   RecommendationResult,
+  SuspiciousReviewItem,
   SuspiciousReviewRequest,
   SuspiciousReviewResult,
 } from '../types/ai';
