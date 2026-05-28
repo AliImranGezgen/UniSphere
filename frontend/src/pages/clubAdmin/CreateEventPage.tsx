@@ -1,10 +1,12 @@
 // UniSphere notu: Create Event Page kulup yoneticisinin ilgili is akisini ekran seviyesinde toplar.
 import { useState } from 'react';
+import axios from 'axios';
 import EventDescriptionAssistant from '../../components/ai/EventDescriptionAssistant';
 import { createEventForm } from '../../services/eventService';
 
 export default function CreateEventPage() {
   const [message, setMessage] = useState<string | null>(null);
+  const [isError, setIsError] = useState(false);
   const [description, setDescription] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -13,11 +15,23 @@ export default function CreateEventPage() {
     form.set('Description', description);
     try {
       await createEventForm(form);
-      setMessage('Etkinlik oluşturuldu.');
+      setIsError(false);
+      setMessage('Etkinlik olusturuldu.');
       setDescription('');
       event.currentTarget.reset();
-    } catch {
-      setMessage('Etkinlik oluşturulamadı. Lütfen API bağlantısını ve form alanlarını kontrol edin.');
+    } catch (error) {
+      setIsError(true);
+      const fallback = 'Etkinlik olusturulamadi. Lutfen API baglantisini ve form alanlarini kontrol edin.';
+      if (axios.isAxiosError(error)) {
+        const responseData = error.response?.data;
+        const detail =
+          typeof responseData === 'string'
+            ? responseData
+            : responseData?.message ?? responseData?.detail;
+        setMessage(detail || fallback);
+        return;
+      }
+      setMessage(fallback);
     }
   };
 
@@ -39,7 +53,7 @@ export default function CreateEventPage() {
           <label className="form-label full">Açıklama<textarea className="textarea" name="Description" required maxLength={500} value={description} onChange={(event) => setDescription(event.target.value)} /></label>
           <EventDescriptionAssistant text={description} onApply={setDescription} />
           <button className="btn btn-primary" type="submit">Etkinliği Kaydet</button>
-          {message ? <div className="notice full">{message}</div> : null}
+          {message ? <div className={`notice ${isError ? 'notice-error' : 'notice-success'} full`}>{message}</div> : null}
         </form>
       </div>
     </div>

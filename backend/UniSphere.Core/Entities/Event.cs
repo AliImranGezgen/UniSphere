@@ -20,6 +20,8 @@ public class Event
     // Etkinlik saati (string)
     public string Time { get; set; } = string.Empty;
 
+    public string Location { get; set; } = string.Empty;
+
     // Etkinlik afiş görseli URL'si
     public string PosterUrl { get; set; } = string.Empty;
 
