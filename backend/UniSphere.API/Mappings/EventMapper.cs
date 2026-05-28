@@ -16,7 +16,7 @@ namespace UniSphere.API.Mappings
                 Description = eventModel.Description,
                 // DateTime → ISO 8601 string ("yyyy-MM-ddTHH:mm:ss")
                 EventDate  = eventModel.EventDate.ToString("yyyy-MM-ddTHH:mm:ss"),
-                Location   = "N/A", // Eski Location kaldırıldı, placeholder
+                Location   = eventModel.Location,
                 Category   = eventModel.Category, // 3. Faz: Category eklendi
                 ClubId     = eventModel.ClubId,
                 ClubName   = eventModel.Club?.Name ?? string.Empty,
@@ -39,8 +39,9 @@ namespace UniSphere.API.Mappings
                 // String → DateTime parse (desteklenen formatlar: ISO 8601, "dd.MM.yyyy HH:mm")
                 Date   = ParseEventDate(createDto.EventDate).ToString("yyyy-MM-dd"), // 3. Faz: Date string
                 Time   = ParseEventDate(createDto.EventDate).ToString("HH:mm"), // 3. Faz: Time string
+                Location   = createDto.Location,
                 ClubId      = createDto.ClubId,
-                PosterUrl = posterPath, // 3. Faz: PosterUrl olarak
+                PosterUrl = posterPath ?? string.Empty, // 3. Faz: PosterUrl olarak
                 Category = createDto.Category ?? string.Empty // 3. Faz: Category eklendi
             };
         }

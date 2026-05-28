@@ -77,8 +77,9 @@ namespace UniSphere.API.Controllers
 
             var eventEntity = dto.ToEntity(posterPath);
             var createdEvent = await _repository.AddEventAsync(eventEntity);
+            var responseEvent = await _repository.GetByEventIdAsync(createdEvent.Id) ?? createdEvent;
 
-            return Ok(createdEvent.ToDto(GetBaseUrl()));
+            return Ok(responseEvent.ToDto(GetBaseUrl()));
         }
 
         // GÖREV 3 : Tek bir etkinliği getir
@@ -126,13 +127,14 @@ namespace UniSphere.API.Controllers
                 string? newPoster;
                 try { newPoster = await SavePosterAsync(dto.PosterImage); }
                 catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-                existingEvent.PosterUrl = newPoster; // 3. Faz: PosterUrl olarak güncellendi
+                existingEvent.PosterUrl = newPoster ?? string.Empty; // 3. Faz: PosterUrl olarak güncellendi
             }
 
             existingEvent.Name       = dto.Title; // 3. Faz: Name olarak güncellendi
             existingEvent.Description = dto.Description;
             existingEvent.Date   = parsedDate.ToString("yyyy-MM-dd"); // 3. Faz: Date string olarak
             existingEvent.Time   = parsedDate.ToString("HH:mm"); // 3. Faz: Time string olarak
+            existingEvent.Location = dto.Location;
             existingEvent.MaxParticipants    = dto.Capacity; // 3. Faz: MaxParticipants olarak
             existingEvent.ClubId      = dto.ClubId;
             existingEvent.Category    = dto.Category ?? string.Empty; // 3. Faz: Category eklendi

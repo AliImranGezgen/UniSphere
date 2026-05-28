@@ -47,11 +47,11 @@ public static class DevelopmentDataSeeder
         EnsureMembership(db, techClub.Id, student.Id, now.AddDays(-35));
         EnsureMembership(db, careerClub.Id, secondStudent.Id, now.AddDays(-30));
 
-        var aiSummit = EnsureEvent(db, techClub.Id, "AI ve Gelecek Zirvesi", "Yapay zeka trendleri, urun gelistirme ve kampus projeleri uzerine interaktif zirve.", "2026-06-10", "14:00", 120, "tech");
-        EnsureEvent(db, techClub.Id, "Uygulamali React Atolyesi", "React ve TypeScript ile kampus uygulamasi gelistirme atolyesi.", "2026-06-18", "13:30", 40, "tech");
-        var careerDay = EnsureEvent(db, careerClub.Id, "Kariyer ve Mulakat Gunu", "CV hazirlama, teknik mulakat ve sektor bulusmalari.", "2026-06-22", "10:00", 80, "career");
-        var pastTech = EnsureEvent(db, techClub.Id, "Python ile Veri Analizi", "Veri analizi temelleri ve mini proje calismasi.", "2026-04-10", "15:00", 50, "tech");
-        var pastCareer = EnsureEvent(db, careerClub.Id, "LinkedIn Profil Atolyesi", "Profesyonel profil hazirlama ve networking ipuclari.", "2026-04-18", "11:00", 60, "career");
+        var aiSummit = EnsureEvent(db, techClub.Id, "AI ve Gelecek Zirvesi", "Yapay zeka trendleri, urun gelistirme ve kampus projeleri uzerine interaktif zirve.", "2026-06-10", "14:00", "Ana Konferans Salonu", 120, "tech");
+        EnsureEvent(db, techClub.Id, "Uygulamali React Atolyesi", "React ve TypeScript ile kampus uygulamasi gelistirme atolyesi.", "2026-06-18", "13:30", "Bilgisayar Laboratuvari", 40, "tech");
+        var careerDay = EnsureEvent(db, careerClub.Id, "Kariyer ve Mulakat Gunu", "CV hazirlama, teknik mulakat ve sektor bulusmalari.", "2026-06-22", "10:00", "Kultur Merkezi", 80, "career");
+        var pastTech = EnsureEvent(db, techClub.Id, "Python ile Veri Analizi", "Veri analizi temelleri ve mini proje calismasi.", "2026-04-10", "15:00", "Seminer Salonu B", 50, "tech");
+        var pastCareer = EnsureEvent(db, careerClub.Id, "LinkedIn Profil Atolyesi", "Profesyonel profil hazirlama ve networking ipuclari.", "2026-04-18", "11:00", "Kariyer Merkezi", 60, "career");
         db.SaveChanges();
 
         EnsureApplication(db, student.Id, pastTech.Id, ApplicationStatus.CheckedIn, now.AddDays(-50), checkedInAt: new DateTime(2026, 4, 10, 15, 5, 0, DateTimeKind.Utc));
@@ -131,12 +131,18 @@ public static class DevelopmentDataSeeder
         string description,
         string date,
         string time,
+        string location,
         int maxParticipants,
         string category)
     {
         var eventEntity = db.Events.FirstOrDefault(item => item.ClubId == clubId && item.Name == name);
         if (eventEntity is not null)
         {
+            if (string.IsNullOrWhiteSpace(eventEntity.Location))
+            {
+                eventEntity.Location = location;
+            }
+
             return eventEntity;
         }
 
@@ -147,6 +153,7 @@ public static class DevelopmentDataSeeder
             Description = description,
             Date = date,
             Time = time,
+            Location = location,
             MaxParticipants = maxParticipants,
             Category = category
         };
