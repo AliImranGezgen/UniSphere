@@ -11,14 +11,15 @@ export default function CreateEventPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     form.set('Description', description);
     try {
       await createEventForm(form);
       setIsError(false);
       setMessage('Etkinlik olusturuldu.');
       setDescription('');
-      event.currentTarget.reset();
+      formElement.reset();
     } catch (error) {
       setIsError(true);
       const fallback = 'Etkinlik olusturulamadi. Lutfen API baglantisini ve form alanlarini kontrol edin.';
