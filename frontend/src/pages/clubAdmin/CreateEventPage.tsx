@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import EventDescriptionAssistant from '../../components/ai/EventDescriptionAssistant';
-import { createEventForm } from '../../services/eventService';
+import { createEventForm, getEvents } from '../../services/eventService';
 
 export default function CreateEventPage() {
   const [message, setMessage] = useState<string | null>(null);
@@ -14,13 +14,26 @@ export default function CreateEventPage() {
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     form.set('Description', description);
-    try {
-      await createEventForm(form);
+    const submittedTitle = String(form.get('Title') ?? '').trim();
+    const submittedDate = String(form.get('EventDate') ?? '').trim();
+
+    const showSuccess = () => {
       setIsError(false);
       setMessage('Etkinlik olusturuldu.');
       setDescription('');
-      event.currentTarget.reset();
+      formElement.reset();
+    };
+
+    try {
+      await createEventForm(form);
+      showSuccess();
     } catch (error) {
+      const createdDespiteError = await wasEventCreated(submittedTitle, submittedDate);
+      if (createdDespiteError) {
+        showSuccess();
+        return;
+      }
+
       setIsError(true);
       const fallback = 'Etkinlik olusturulamadi. Lutfen API baglantisini ve form alanlarini kontrol edin.';
       if (axios.isAxiosError(error)) {
@@ -33,6 +46,17 @@ export default function CreateEventPage() {
         return;
       }
       setMessage(fallback);
+    }
+  };
+
+  const wasEventCreated = async (title: string, eventDate: string) => {
+    if (!title || !eventDate) return false;
+
+    try {
+      const events = await getEvents();
+      return events.some((item) => item.title === title && item.eventDate.startsWith(eventDate));
+    } catch {
+      return false;
     }
   };
 
