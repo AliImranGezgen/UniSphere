@@ -16,6 +16,8 @@ export default function CreateEventPage() {
     form.set('Description', description);
     const submittedTitle = String(form.get('Title') ?? '').trim();
     const submittedDate = String(form.get('EventDate') ?? '').trim();
+    const submittedClubId = Number(form.get('ClubId') ?? 0);
+    const submittedLocation = String(form.get('Location') ?? '').trim();
 
     const showSuccess = () => {
       setIsError(false);
@@ -28,7 +30,7 @@ export default function CreateEventPage() {
       await createEventForm(form);
       showSuccess();
     } catch (error) {
-      const createdDespiteError = await wasEventCreated(submittedTitle, submittedDate);
+      const createdDespiteError = await wasEventCreated(submittedTitle, submittedDate, submittedClubId, submittedLocation);
       if (createdDespiteError) {
         showSuccess();
         return;
@@ -49,16 +51,35 @@ export default function CreateEventPage() {
     }
   };
 
-  const wasEventCreated = async (title: string, eventDate: string) => {
+  const wasEventCreated = async (title: string, eventDate: string, clubId: number, location: string) => {
     if (!title || !eventDate) return false;
 
-    try {
-      const events = await getEvents();
-      return events.some((item) => item.title === title && item.eventDate.startsWith(eventDate));
-    } catch {
-      return false;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      try {
+        const events = await getEvents();
+        const normalizedTitle = normalize(title);
+        const normalizedLocation = normalize(location);
+        const found = events.some((item) => {
+          const titleMatches = normalize(item.title) === normalizedTitle;
+          const clubMatches = !clubId || item.clubId === clubId;
+          const locationMatches = !normalizedLocation || normalize(item.location) === normalizedLocation;
+          const dateMatches = item.eventDate.startsWith(eventDate) || item.eventDate.slice(0, 16) === eventDate;
+          return titleMatches && clubMatches && (dateMatches || locationMatches);
+        });
+
+        if (found) return true;
+      } catch {
+        // Bir sonraki kisa denemede tekrar kontrol edilir.
+      }
+
+      await wait(300);
     }
+
+    return false;
   };
+
+  const normalize = (value: string) => value.trim().toLocaleLowerCase('tr-TR');
+  const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
   return (
     <div className="panel-page">

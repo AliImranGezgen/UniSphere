@@ -67,8 +67,15 @@ namespace UniSphere.API.Controllers
         public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
         {
             // Tarih parse kontrolü
-            if (!DateTime.TryParse(dto.EventDate, out _))
-                return BadRequest($"Geçersiz tarih formatı: '{dto.EventDate}'. Beklenen: 'yyyy-MM-ddTHH:mm'");
+            DateTime parsedDate;
+            try
+            {
+                parsedDate = EventMapping.ParseEventDate(dto.EventDate);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             // Afiş görselini kaydet
             string? posterPath;
@@ -78,7 +85,21 @@ namespace UniSphere.API.Controllers
             var eventEntity = dto.ToEntity(posterPath);
             var createdEvent = await _repository.AddEventAsync(eventEntity);
 
-            return Ok(createdEvent.ToDto(GetBaseUrl()));
+            return StatusCode(StatusCodes.Status201Created, new
+            {
+                eventId = createdEvent.Id,
+                title = createdEvent.Name,
+                description = createdEvent.Description,
+                eventDate = parsedDate.ToString("yyyy-MM-ddTHH:mm:ss"),
+                location = createdEvent.Location,
+                capacity = createdEvent.MaxParticipants,
+                clubId = createdEvent.ClubId,
+                clubName = string.Empty,
+                category = createdEvent.Category,
+                posterImageUrl = string.IsNullOrEmpty(createdEvent.PosterUrl)
+                    ? null
+                    : $"{GetBaseUrl()}/uploads/{createdEvent.PosterUrl}"
+            });
         }
 
         // GÖREV 3 : Tek bir etkinliği getir
