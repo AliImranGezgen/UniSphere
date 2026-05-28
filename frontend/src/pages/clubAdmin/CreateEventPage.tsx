@@ -19,7 +19,7 @@ export default function CreateEventPage() {
       setIsError(false);
       setMessage('Etkinlik olusturuldu.');
       setDescription('');
-      formElement.reset();
+      event.currentTarget.reset();
     } catch (error) {
       setIsError(true);
       const fallback = 'Etkinlik olusturulamadi. Lutfen API baglantisini ve form alanlarini kontrol edin.';
