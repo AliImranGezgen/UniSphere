@@ -77,9 +77,8 @@ namespace UniSphere.API.Controllers
 
             var eventEntity = dto.ToEntity(posterPath);
             var createdEvent = await _repository.AddEventAsync(eventEntity);
-            var responseEvent = await _repository.GetByEventIdAsync(createdEvent.Id) ?? createdEvent;
 
-            return Ok(responseEvent.ToDto(GetBaseUrl()));
+            return Ok(createdEvent.ToDto(GetBaseUrl()));
         }
 
         // GÖREV 3 : Tek bir etkinliği getir
