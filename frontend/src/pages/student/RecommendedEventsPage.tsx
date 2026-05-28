@@ -12,15 +12,44 @@ export default function RecommendedEventsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    Promise.all([getEvents(), aiService.getRecommendations()])
-      .then(([eventData, recommendationData]) => {
+    let isMounted = true;
+
+    const loadRecommendations = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const eventData = await getEvents();
+        if (!isMounted) return;
+
         setEvents(eventData);
-        setRecommendations(recommendationData);
-        setError(null);
-      })
-      .catch(() => setError('AI önerileri şu anda yüklenemedi.'))
-      .finally(() => setLoading(false));
+
+        try {
+          const recommendationData = await aiService.getRecommendations();
+          if (!isMounted) return;
+
+          setRecommendations(recommendationData.length > 0 ? recommendationData : buildFallbackRecommendations(eventData));
+        } catch {
+          if (!isMounted) return;
+
+          setRecommendations(buildFallbackRecommendations(eventData));
+        }
+      } catch {
+        if (!isMounted) return;
+
+        setError('Etkinlik verileri su anda yuklenemedi.');
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadRecommendations();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const cards = useMemo(() => recommendations
@@ -61,4 +90,36 @@ export default function RecommendedEventsPage() {
       </div>
     </div>
   );
+}
+
+function buildFallbackRecommendations(events: Event[]): RecommendationResult[] {
+  const now = Date.now();
+
+  return events
+    .filter((event) => Number.isNaN(Date.parse(event.eventDate)) || Date.parse(event.eventDate) >= now)
+    .slice()
+    .sort((a, b) => Date.parse(a.eventDate) - Date.parse(b.eventDate))
+    .slice(0, 5)
+    .map((event, index) => ({
+      eventId: event.eventId,
+      eventTitle: event.title,
+      clubName: event.clubName,
+      score: Math.max(55, 85 - index * 7),
+      reason: event.category
+        ? `${event.category} kategorisindeki yaklasan etkinlik oldugu icin one cikarildi.`
+        : 'Yaklasan ve kontenjani uygun bir etkinlik oldugu icin one cikarildi.',
+      explanations: [
+        {
+          code: 'fallback_upcoming_event',
+          message: 'AI servisi yanit vermediginde MVP kural tabanli yedek oneriler kullanildi.',
+          weight: Math.max(55, 85 - index * 7),
+        },
+      ],
+      meta: {
+        model: 'frontend-rule-based-fallback',
+        version: 'v1',
+        generatedAt: new Date().toISOString(),
+        isDecisionSupportOnly: false,
+      },
+    }));
 }

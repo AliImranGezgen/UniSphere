@@ -29,7 +29,6 @@ public class AIController : ControllerBase
     }
 
     [HttpGet("recommendations/me")]
-    [Authorize(Roles = UserRoles.Student)]
     public async Task<IActionResult> GetMyRecommendations()
     {
         var userId = GetCurrentUserId();
@@ -42,7 +41,6 @@ public class AIController : ControllerBase
     }
 
     [HttpGet("recommend")]
-    [Authorize(Roles = UserRoles.Student)]
     public Task<IActionResult> GetRecommendationsCompatibility()
     {
         return GetMyRecommendations();
