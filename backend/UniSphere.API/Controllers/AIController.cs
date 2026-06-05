@@ -46,6 +46,76 @@ public class AIController : ControllerBase
         return GetMyRecommendations();
     }
 
+    [HttpGet("recommend-events/{userId:int}")]
+    public async Task<IActionResult> GetRecommendationsForUserCompatibility(int userId)
+    {
+        if (!User.IsInRole(UserRoles.SystemAdmin) && userId != GetCurrentUserId())
+        {
+            return Forbid();
+        }
+
+        var result = await _recommendationService.GetRecommendationsAsync(new RecommendationRequestDto
+        {
+            UserId = userId
+        });
+
+        return Ok(result);
+    }
+
+    [HttpGet("noshow")]
+    [Authorize(Roles = UserRoles.ClubAdmin + "," + UserRoles.SystemAdmin)]
+    public async Task<IActionResult> GetNoShowCompatibility([FromQuery] int? userId, [FromQuery] int? eventId)
+    {
+        var target = await ResolveNoShowTargetAsync(userId, eventId);
+        if (target is null)
+        {
+            return Ok(new NoShowResultDto
+            {
+                RiskLevel = "Low",
+                Score = 0,
+                Reasons = new List<string> { "Analiz edilecek onayli basvuru bulunamadi." },
+                Meta = new AIResponseMetaDto
+                {
+                    Model = "noshow-v2.heuristics",
+                    Version = "v1",
+                    GeneratedAt = DateTime.UtcNow,
+                    IsDecisionSupportOnly = true
+                }
+            });
+        }
+
+        return Ok(_noShowPredictionService.Predict(new NoShowRequestDto
+        {
+            UserId = target.Value.UserId,
+            EventId = target.Value.EventId
+        }));
+    }
+
+    [HttpPost("predict-noshow")]
+    [Authorize(Roles = UserRoles.ClubAdmin + "," + UserRoles.SystemAdmin)]
+    public async Task<IActionResult> PredictNoShowCompatibility([FromBody] NoShowPredictionRequestDto request)
+    {
+        if (!await CanManageEventAsync(request.EventId))
+        {
+            return Forbid();
+        }
+
+        var prediction = _noShowPredictionService.Predict(new NoShowRequestDto
+        {
+            UserId = request.UserId,
+            EventId = request.EventId
+        });
+
+        return Ok(new NoShowPredictionDto
+        {
+            UserId = request.UserId,
+            EventId = request.EventId,
+            RiskLevel = prediction.RiskLevel,
+            RiskScore = prediction.Score,
+            Reason = string.Join(" ", prediction.Reasons)
+        });
+    }
+
     [HttpGet("events/{eventId:int}/no-show-risks")]
     [Authorize(Roles = UserRoles.ClubAdmin + "," + UserRoles.SystemAdmin)]
     public async Task<IActionResult> GetNoShowRisksForEvent(int eventId)
@@ -212,6 +282,43 @@ public class AIController : ControllerBase
                 (x.Role == ClubRoles.President ||
                  x.Role == ClubRoles.VicePresident ||
                  x.Role == ClubRoles.EventManager));
+    }
+
+    private async Task<(int UserId, int EventId)?> ResolveNoShowTargetAsync(int? userId, int? eventId)
+    {
+        if (userId.HasValue && eventId.HasValue)
+        {
+            if (!await CanManageEventAsync(eventId.Value))
+            {
+                return null;
+            }
+
+            return (userId.Value, eventId.Value);
+        }
+
+        var currentUserId = GetCurrentUserId();
+        var manageableClubIds = User.IsInRole(UserRoles.SystemAdmin)
+            ? await _context.Clubs.AsNoTracking().Select(c => c.Id).ToListAsync()
+            : await _context.ClubRoleAssignments
+                .AsNoTracking()
+                .Where(x =>
+                    x.UserId == currentUserId &&
+                    (x.Role == ClubRoles.President ||
+                     x.Role == ClubRoles.VicePresident ||
+                     x.Role == ClubRoles.EventManager))
+                .Select(x => x.ClubId)
+                .ToListAsync();
+
+        var application = await _context.Applications
+            .AsNoTracking()
+            .Include(a => a.Event)
+            .Where(a =>
+                a.Status == ApplicationStatus.Approved &&
+                manageableClubIds.Contains(a.Event.ClubId))
+            .OrderBy(a => a.Event.EventDate)
+            .FirstOrDefaultAsync();
+
+        return application is null ? null : (application.UserId, application.EventId);
     }
 
     private static ReviewAnalysisItem AnalyzeReview(int reviewId, string comment, int? rating, DateTime createdAt, string eventTitle, string reviewerName)

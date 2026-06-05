@@ -23,7 +23,8 @@ export default function EventDescriptionAssistant({ text, onApply }: Props) {
       const response = await aiService.improveDescription({ originalText: text });
       setResult(response);
     } catch {
-      setError('AI önerisi alınamadı. Lütfen daha sonra tekrar deneyin.');
+      setResult(buildFallbackImprovement(text));
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -65,4 +66,14 @@ export default function EventDescriptionAssistant({ text, onApply }: Props) {
       ) : null}
     </section>
   );
+}
+
+function buildFallbackImprovement(text: string): DescriptionImprovementResult {
+  const normalized = text.trim().replace(/\s+/g, ' ');
+
+  return {
+    originalText: text,
+    improvedText: `${normalized} Etkinlik boyunca katilimcilar konuya dair uygulanabilir bilgiler edinecek, deneyimlerini paylasacak ve soru-cevap bolumunde merak ettiklerini iletebilecektir.`,
+    notes: 'Backend AI servisi cevap vermediginde MVP kural tabanli yedek metin onerisi uretildi.',
+  };
 }
